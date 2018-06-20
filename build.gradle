@@ -1,0 +1,35 @@
+plugins {
+    id 'org.jetbrains.intellij' version '0.3.3'
+    id 'java'
+}
+
+apply plugin: 'idea'
+apply plugin: 'org.jetbrains.intellij'
+apply plugin: 'java'
+
+group 'com.nowocode'
+version '1.0-SNAPSHOT'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+    jcenter()
+}
+
+intellij {
+    plugins 'coverage' //Bundled plugin dependencies
+    pluginName 'fyre'
+}
+
+dependencies {
+    compile 'org.codehaus.groovy:groovy-all:2.3.11'
+    implementation 'com.google.firebase:firebase-admin:6.2.0'
+    testCompile "org.mockito:mockito-core:2.+"
+}
+
+patchPluginXml {
+    changeNotes """
+      Add change notes here.<br>
+      <em>most HTML tags may be used</em>"""
+}
