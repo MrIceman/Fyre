@@ -14,19 +14,25 @@ public class VisualFire implements ObserveContract.FireObserver {
     private String pathToCredentials;
     private DataManager dataManager;
     private FyreLogger fyreLogger;
+    private static VisualFire instance;
 
+    public static VisualFire getInstance() {
+        if (instance == null)
+            instance = new VisualFire(new FyreLogger());
+        return instance;
+    }
     public VisualFire(FyreLogger fyreLogger) {
-        this("src/main/java/firebase-config.json", new DataManagerImpl(new FirebaseManager(fyreLogger)), fyreLogger);
+        this( new DataManagerImpl(new FirebaseManager(fyreLogger)), fyreLogger);
     }
 
-    public VisualFire(String pathToCredentials, DataManager dataManager, FyreLogger fyreLogger) {
+    public VisualFire(DataManager dataManager, FyreLogger fyreLogger) {
         this.fyreLogger = fyreLogger;
-        this.pathToCredentials = pathToCredentials;
         this.dataManager = dataManager;
     }
 
-    public void setUp() {
+    public void setUp(String pathToCredentials) {
         try {
+            this.pathToCredentials = pathToCredentials;
             this.dataManager.configureFirebase(this.pathToCredentials);
         } catch (IOException e) {
             fyreLogger.log(e.getMessage());

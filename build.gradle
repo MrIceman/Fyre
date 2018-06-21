@@ -5,7 +5,6 @@ plugins {
 
 apply plugin: 'idea'
 apply plugin: 'org.jetbrains.intellij'
-apply plugin: 'java'
 
 group 'com.nowocode'
 version '1.0-SNAPSHOT'
@@ -24,7 +23,10 @@ intellij {
 
 dependencies {
     compile 'org.codehaus.groovy:groovy-all:2.3.11'
-    implementation 'com.google.firebase:firebase-admin:6.2.0'
+    compile 'com.google.firebase:firebase-admin:6.2.0'
+    compile group: 'org.slf4j', name:'slf4j-api', version: '1.7.2'
+    compile group: 'ch.qos.logback', name:'logback-classic', version: '1.0.9'
+    compile group: 'ch.qos.logback', name:'logback-core', version: '1.0.9'
     testCompile "org.mockito:mockito-core:2.+"
 }
 

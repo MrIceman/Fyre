@@ -10,7 +10,7 @@ public class EntryPoint {
 
         System.out.println("Hello World");
         VisualFire app = new VisualFire(new FyreLogger());
-        app.setUp();
+        app.setUp("src/main/java/firebase-config.json");
         Map<String, String> testData = new HashMap();
         testData.put("Material", "Wood");
         testData.put("Bought", "12-06-1993");

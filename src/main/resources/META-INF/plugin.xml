@@ -20,5 +20,9 @@
 
     <actions>
         <!-- Add your actions here -->
+        <group id="MyPlugin.SampleMenu" text="Fyre" description="Greeting menu">
+            <add-to-group group-id="MainMenu" anchor="last"/>
+            <action id="Fyre.Setup" class="actions.StartFyreAction" text="Setup" description="Says hello"/>
+        </group>
     </actions>
 </idea-plugin>
