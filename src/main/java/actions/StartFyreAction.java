@@ -1,5 +1,7 @@
 package actions;
 
+import com.intellij.openapi.actionSystem.ActionGroup;
+import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.fileChooser.FileChooser;
@@ -24,7 +26,6 @@ public class StartFyreAction extends AnAction {
     @Override
     public void actionPerformed(AnActionEvent e) {
         Project project = e.getProject();
-
         VirtualFile file = FileChooser.chooseFile(new FileChooserDescriptor(true, false, false, false, false, false), e.getProject(), null);
         if (file != null)
             app.setUp(file.getPath());
@@ -35,3 +36,4 @@ public class StartFyreAction extends AnAction {
         app.setData("Fyre_Plugin_Launch", map);
     }
 }
+
