@@ -1,12 +1,9 @@
 <idea-plugin>
-    <id>com.nowocode.visual-fire</id>
-    <name>VisualFire</name>
-    <vendor email="support@yourcompany.com" url="http://www.yourcompany.com">Nowocode</vendor>
+    <id>com.nowocode.fyre</id>
+    <name>Fyre</name>
+    <vendor email="mrtnnwsd@©mail.com" url="http://www.martinnowosad.de">Martin Nowosad</vendor>
 
-    <description><![CDATA[
-    Enter short description for your plugin here.<br>
-    <em>most HTML tags may be used</em>
-    ]]></description>
+    <description>Update and Browse your Firebase Database in your IDE</description>
 
     <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
          on how to target different products -->
@@ -19,10 +16,11 @@
     </extensions>
 
     <actions>
-        <!-- Add your actions here -->
-        <group id="MyPlugin.SampleMenu" text="Fyre" description="Greeting menu">
+        <group id="Fyre" text="Fyre" description="Greeting menu">
             <add-to-group group-id="MainMenu" anchor="last"/>
-            <action id="Fyre.Setup" class="actions.StartFyreAction" text="Setup" description="Says hello"/>
+            <action id="Fyre.Setup" class="actions.StartFyreAction" text="Configure" description="Says hello"/>
+            <action id="Fyre.GetRootData" class="actions.GetRootDataAction" text="Show"
+                    description="Shows the Root Tree "/>
         </group>
     </actions>
 </idea-plugin>
