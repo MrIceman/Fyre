@@ -6,24 +6,43 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.treeStructure.Tree;
+import domain.VisualFire;
 import model.FireNode;
+import model.ObserveContract;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
+import java.util.ArrayList;
 
-public class GetRootDataAction extends AnAction {
+public class GetRootDataAction extends AnAction implements ObserveContract.FireObserver {
+    private VisualFire visualFire;
+    private FirebaseTreeDialog dialog;
+    private JBScrollPane pane;
+    private Tree tree;
 
+
+    public GetRootDataAction() {
+        super("Getting Root Data");
+        visualFire = VisualFire.getInstance();
+        visualFire.addObserver(this);
+    }
     @Override
     public void actionPerformed(AnActionEvent e) {
         // TODO: insert action logic here
-        FirebaseTreeDialog dialog = new FirebaseTreeDialog(e.getProject());
+        dialog = new FirebaseTreeDialog(e.getProject());
         dialog.show();
+        VisualFire.getInstance().load();
+    }
+
+    @Override
+    public void update(FireNode data) {
+        System.out.println("Root Data Action updating!");
+        dialog.updateUi(data);
     }
 
 
     class FirebaseTreeDialog extends DialogWrapper {
-
 
         protected FirebaseTreeDialog(@Nullable Project project) {
             super(project);
@@ -33,46 +52,36 @@ public class GetRootDataAction extends AnAction {
         @Nullable
         @Override
         protected JComponent createCenterPanel() {
+            System.out.println("Creating Cenger Panel");
             DefaultMutableTreeNode top = new DefaultMutableTreeNode("Root");
             createNodes(top);
-            JTree tree = new Tree(top);
-            JScrollPane pane = new JBScrollPane(tree);
+            pane = new JBScrollPane(tree);
             return pane;
         }
 
+        private void buildTreeRecursively(DefaultMutableTreeNode parentNode,
+                                                            ArrayList<FireNode> children) {
+            for(FireNode node : children) {
+                DefaultMutableTreeNode childNode = new DefaultMutableTreeNode(node.getKey());
+                parentNode.add(childNode);
+                buildTreeRecursively(childNode, node.getChildren());
+            }
+        }
+
+        public void updateUi(FireNode data) {
+            tree.add(rebuildTree(data));
+            pane.repaint();
+        }
+
+        private Tree rebuildTree(FireNode rootFyreNode) {
+            DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode(rootFyreNode.getKey());
+            buildTreeRecursively(rootNode, rootFyreNode.getChildren());
+
+            return new Tree(rootNode);
+        }
+
         private void createNodes(DefaultMutableTreeNode top) {
-            DefaultMutableTreeNode category = null;
-            DefaultMutableTreeNode book = null;
 
-            category = new DefaultMutableTreeNode("Books for Java Programmers");
-            top.add(category);
-
-            //original Tutorial
-            book = new DefaultMutableTreeNode(new FireNode("The Java Tutorial: A Short Course on the Basics"));
-            category.add(book);
-
-            //Tutorial Continued
-            book = new DefaultMutableTreeNode(new FireNode
-                    ("The Java Tutorial Continued: The Rest of the JDK"));
-            category.add(book);
-
-            //Swing Tutorial
-            book = new DefaultMutableTreeNode(new FireNode("The Swing Tutorial: A Guide to Constructing GUIs"));
-            category.add(book);
-
-            //...add more books for programmers...
-
-            category = new DefaultMutableTreeNode(new FireNode("Books for Java Implementers"));
-            top.add(category);
-
-            //VM
-            book = new DefaultMutableTreeNode(new FireNode
-                    ("The Java Virtual Machine Specification"));
-            category.add(book);
-
-            //Language Spec
-            book = new DefaultMutableTreeNode(new FireNode("The Java Language Specification"));
-            category.add(book);
         }
     }
 }

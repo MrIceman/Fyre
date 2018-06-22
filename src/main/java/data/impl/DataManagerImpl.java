@@ -24,6 +24,11 @@ public class DataManagerImpl extends ObserveContract.FireObservable implements D
         this.firebaseManager.init(pathToConfig, "https://breathe-a7606.firebaseio.com");
     }
 
+    @Override
+    public ObserveContract.FireObservable getObservable() {
+        return this;
+    }
+
     private void buildFireTree(FireNode parent, DataSnapshot snapshot) {
         for(DataSnapshot dataSnapshot : snapshot.getChildren()) {
             FireNode node = new FireNode(dataSnapshot.getKey());
@@ -40,10 +45,7 @@ public class DataManagerImpl extends ObserveContract.FireObservable implements D
             public void onDataChange(DataSnapshot snapshot) {
                 FireNode root = new FireNode(snapshot.getKey());
                 buildFireTree(root, snapshot);
-                FireNode.printTree(root);
-                FireNode node = root.searchNode("path");
-                System.out.println(node.getPath());
-
+                updateAll(root);
             }
 
             @Override

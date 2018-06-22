@@ -1,7 +1,5 @@
 package actions;
 
-import com.intellij.openapi.actionSystem.ActionGroup;
-import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.fileChooser.FileChooser;
@@ -10,7 +8,6 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.vfs.VirtualFile;
 import domain.VisualFire;
-import util.FyreLogger;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -21,7 +18,7 @@ public class StartFyreAction extends AnAction {
 
     public StartFyreAction(){
         super("Starting Fyre");
-        app = new VisualFire(new FyreLogger());
+        app = VisualFire.getInstance();
     }
     @Override
     public void actionPerformed(AnActionEvent e) {

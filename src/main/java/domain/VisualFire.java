@@ -10,7 +10,7 @@ import util.FyreLogger;
 import java.io.IOException;
 import java.util.Map;
 
-public class VisualFire implements ObserveContract.FireObserver {
+public class VisualFire extends ObserveContract.FireObservable implements ObserveContract.FireObserver {
     private String pathToCredentials;
     private DataManager dataManager;
     private FyreLogger fyreLogger;
@@ -34,6 +34,7 @@ public class VisualFire implements ObserveContract.FireObserver {
         try {
             this.pathToCredentials = pathToCredentials;
             this.dataManager.configureFirebase(this.pathToCredentials);
+            this.dataManager.getObservable().addObserver(this);
         } catch (IOException e) {
             fyreLogger.log(e.getMessage());
         }
@@ -52,6 +53,6 @@ public class VisualFire implements ObserveContract.FireObserver {
 
     @Override
     public void update(FireNode data) {
-
+        this.updateAll(data);
     }
 }
