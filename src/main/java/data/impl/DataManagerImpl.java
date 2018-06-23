@@ -33,6 +33,8 @@ public class DataManagerImpl extends ObserveContract.FireObservable implements D
         for(DataSnapshot dataSnapshot : snapshot.getChildren()) {
             FireNode node = new FireNode(dataSnapshot.getKey());
             parent.appendNode(node);
+            if(!dataSnapshot.hasChildren())
+                node.setValue(snapshot.getValue().toString());
             this.buildFireTree(node, dataSnapshot);
         }
     }
@@ -40,9 +42,12 @@ public class DataManagerImpl extends ObserveContract.FireObservable implements D
     @Override
     public FireNode getRoot() {
         DatabaseReference ref = this.firebaseManager.getDatabase().getReference();
+        logger.log("Getting Root!");
+
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
+                logger.log("Received a root!");
                 FireNode root = new FireNode(snapshot.getKey());
                 buildFireTree(root, snapshot);
                 updateAll(root);

@@ -1,6 +1,7 @@
 package domain;
 
 
+import com.intellij.openapi.application.ApplicationManager;
 import data.FirebaseManager;
 import data.impl.DataManagerImpl;
 import model.FireNode;
@@ -21,8 +22,9 @@ public class VisualFire extends ObserveContract.FireObservable implements Observ
             instance = new VisualFire(new FyreLogger());
         return instance;
     }
+
     public VisualFire(FyreLogger fyreLogger) {
-        this( new DataManagerImpl(new FirebaseManager(fyreLogger)), fyreLogger);
+        this(new DataManagerImpl(new FirebaseManager(fyreLogger)), fyreLogger);
     }
 
     public VisualFire(DataManager dataManager, FyreLogger fyreLogger) {
@@ -43,6 +45,7 @@ public class VisualFire extends ObserveContract.FireObservable implements Observ
     public void load() {
         this.dataManager.getRoot();
     }
+
     public FireNode getData(String node) {
         return this.dataManager.getNode(node);
     }

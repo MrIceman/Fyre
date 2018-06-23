@@ -26,11 +26,6 @@ public class StartFyreAction extends AnAction {
         VirtualFile file = FileChooser.chooseFile(new FileChooserDescriptor(true, false, false, false, false, false), e.getProject(), null);
         if (file != null)
             app.setUp(file.getPath());
-        app.load();
-        Messages.showInputDialog(project, "Please specify the path to your credentials JSON file", "Fyre - Setup", Messages.getInformationIcon());
-        Map<String, String> map = new HashMap();
-        map.put("date", new Date() + "");
-        app.setData("Fyre_Plugin_Launch", map);
     }
 }
 
