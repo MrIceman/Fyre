@@ -40,22 +40,17 @@ public class GetRootDataAction extends AnAction implements ObserveContract.FireO
 
     @Override
     public void update(FireNode data) {
-                System.out.println("Root Data Action updating! ");
-                FireNode.printTree(data);
-                updateUi(data);
-            }
+        System.out.println("Root Data Action updating! ");
+        FireNode.printTree(data);
+        updateUi(data);
+    }
 
     private void buildTreeRecursively(DefaultMutableTreeNode parentNode,
                                       ArrayList<FireNode> children) {
         for (FireNode node : children) {
             DefaultMutableTreeNode childNode;
-            if(node.getChildren().isEmpty() && node.getValue() != null) {
-                childNode = new DefaultMutableTreeNode(node.getValue());
-            }
-            else {
-                childNode = new DefaultMutableTreeNode(node.getKey());
-                buildTreeRecursively(childNode, node.getChildren());
-            }
+            childNode = new DefaultMutableTreeNode(node.getKey());
+            buildTreeRecursively(childNode, node.getChildren());
             parentNode.add(childNode);
 
         }

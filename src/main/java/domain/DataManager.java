@@ -9,8 +9,8 @@ import java.util.Map;
 
 public interface DataManager extends ObserveContract.FireObserver {
     FireNode getRoot();
-    public FireNode getNode(String node);
-    public FireNode updateNode(String node, Map<String, String> values);
-    public void configureFirebase(String pathToConfig) throws IOException;
-    public ObserveContract.FireObservable getObservable();
+    FireNode getNode(String node);
+    FireNode updateNode(String node, Map<String, String> values);
+    void configureFirebase(String pathToConfig) throws IOException;
+    ObserveContract.FireObservable getObservable();
 }
