@@ -83,6 +83,21 @@ public class DataManagerImpl extends ObserveContract.FireObservable implements D
     }
 
     @Override
+    public void renameNode(String pathToNode, String name) {
+
+    }
+
+    @Override
+    public void addNode(String pathToParent, String value) {
+
+    }
+
+    @Override
+    public void deleteNode(String pathToNode) {
+
+    }
+
+    @Override
     public void update(FireNode data) {
         this.updateAll(data);
     }
