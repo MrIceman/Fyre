@@ -27,9 +27,14 @@ public class FireNode {
         this.key = key;
     }
 
+    @Override
+    public String toString() {
+        return this.key;
+    }
+
     public String getPath() {
         if (this.isRoot())
-            path = ".";
+            path = "Root";
         return this.path; }
 
     public ArrayList<FireNode> getChildren() {

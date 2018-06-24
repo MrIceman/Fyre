@@ -9,6 +9,7 @@ import model.ObserveContract;
 import util.FyreLogger;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 
 public class DataManagerImpl extends ObserveContract.FireObservable implements DataManager {
@@ -39,10 +40,8 @@ public class DataManagerImpl extends ObserveContract.FireObservable implements D
 
         for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
             node = new FireNode(dataSnapshot.getKey());
-            this.buildFireTree(node, dataSnapshot);
-
             parent.appendNode(node);
-
+            this.buildFireTree(node, dataSnapshot);
         }
     }
 
@@ -75,35 +74,11 @@ public class DataManagerImpl extends ObserveContract.FireObservable implements D
     }
 
     @Override
-    public FireNode updateNode(String node, Map<String, String> values) {
-        DatabaseReference ref = this.firebaseManager.getDatabase().getReference(node);
-        ref.addChildEventListener(new ChildEventListener() {
-            @Override
-            public void onChildAdded(DataSnapshot snapshot, String previousChildName) {
-            }
-
-            @Override
-            public void onChildChanged(DataSnapshot snapshot, String previousChildName) {
-
-            }
-
-            @Override
-            public void onChildRemoved(DataSnapshot snapshot) {
-
-            }
-
-            @Override
-            public void onChildMoved(DataSnapshot snapshot, String previousChildName) {
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError error) {
-
-            }
-        });
-
-        ref.setValueAsync(values);
+    public FireNode updateNode(String pathToNode, String value) {
+        DatabaseReference ref = this.firebaseManager.getDatabase().getReference();
+        Map<String, Object> updatedMap = new HashMap<>();
+        updatedMap.put(pathToNode, value);
+        ref.updateChildrenAsync(updatedMap);
         return null;
     }
 

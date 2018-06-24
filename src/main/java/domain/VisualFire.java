@@ -1,7 +1,6 @@
 package domain;
 
 
-import com.intellij.openapi.application.ApplicationManager;
 import data.FirebaseManager;
 import data.impl.DataManagerImpl;
 import model.FireNode;
@@ -50,8 +49,8 @@ public class VisualFire extends ObserveContract.FireObservable implements Observ
         return this.dataManager.getNode(node);
     }
 
-    public FireNode setData(String key, Map<String, String> values) {
-        return this.dataManager.updateNode(key, values);
+    public FireNode setData(String key, String value) {
+        return this.dataManager.updateNode(key, value);
     }
 
     @Override
