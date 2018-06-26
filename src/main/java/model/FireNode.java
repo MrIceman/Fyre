@@ -10,9 +10,9 @@ import java.util.ArrayList;
  * Child:
  * Child of Child
  * Child of Child
- *
+ * <p>
  * FireNode = root;
- *
+ * <p>
  * root.searchNode(["temp","user",""]);
  */
 public class FireNode {
@@ -35,7 +35,8 @@ public class FireNode {
     public String getPath() {
         if (this.isRoot())
             path = "Root";
-        return this.path; }
+        return this.path;
+    }
 
     public ArrayList<FireNode> getChildren() {
         return children;
@@ -75,7 +76,7 @@ public class FireNode {
 
     public static void printTree(FireNode source) {
         System.out.println("Current Tree: " + source.getPath());
-        for(FireNode data : source.getChildren()) {
+        for (FireNode data : source.getChildren()) {
             printTree(data);
         }
     }
@@ -112,5 +113,9 @@ public class FireNode {
 
     public void setValue(String value) {
         this.value = value;
+    }
+
+    public void setPath(String pathToNode) {
+        this.path = pathToNode;
     }
 }

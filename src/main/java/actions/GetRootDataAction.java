@@ -11,11 +11,11 @@ import util.FyreLogger;
 
 import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 public class GetRootDataAction extends AnAction implements ObserveContract.FireObserver {
     private VisualFire visualFire;
@@ -39,6 +39,8 @@ public class GetRootDataAction extends AnAction implements ObserveContract.FireO
             logger.log("Loading Root");
             visualFire.load();
         });
+
+
         dialog.setVisible(true);
 
     }
@@ -70,25 +72,34 @@ public class GetRootDataAction extends AnAction implements ObserveContract.FireO
         DefaultMutableTreeNode newRoot = rebuildTreeNode(data);
         root.add(newRoot);
         model.reload(root);
+        StringBuilder currentSelectedNode = new StringBuilder();
+        dialog.getTree().addTreeSelectionListener(new TreeSelectionListener() {
+            @Override
+            public void valueChanged(TreeSelectionEvent e) {
+                logger.log("Current Selected Node: " + e.getPath().getLastPathComponent().toString());
+                currentSelectedNode.delete(0, currentSelectedNode.length());
+                currentSelectedNode.append(e.getPath().getLastPathComponent().toString());
+            }
+        });
         if (model.getTreeModelListeners() != null) {
             model.addTreeModelListener(new TreeModelListener() {
                 @Override
                 public void treeNodesChanged(TreeModelEvent e) {
-                    logger.log(e.toString());
                     Object currentVal = e.getChildren()[0];
+                    logger.log("getTreepath To String<: " + e.getTreePath().toString());
+                    logger.log("getPath To String<: " + e.getPath().toString());
                     Object[] pathToSelectedElement = e.getPath();
                     StringBuilder path = new StringBuilder();
-                    logger.log("Current Val: " + currentVal.toString());
                     for (int i = 0; i < pathToSelectedElement.length; i++) {
                         if (i == 0 || i == 1)
                             continue;
                         path.append(pathToSelectedElement[i].toString()).append("/");
 
                     }
-                    path.deleteCharAt(path.length() - 1);
-                    logger.log("Full Ref: " + path.toString());
+                    if (path.length() > 0)
+                        path.deleteCharAt(path.length() - 1);
+                    visualFire.updateData(path.toString(), currentSelectedNode.toString(), currentVal.toString());
 
-                    visualFire.setData(path.toString(), currentVal.toString());
                 }
 
                 @Override
@@ -98,11 +109,12 @@ public class GetRootDataAction extends AnAction implements ObserveContract.FireO
 
                 @Override
                 public void treeNodesRemoved(TreeModelEvent e) {
-
+                    logger.log("Removed a tree node");
                 }
 
                 @Override
                 public void treeStructureChanged(TreeModelEvent e) {
+                    logger.log("Tree structure changed!");
 
                 }
             });

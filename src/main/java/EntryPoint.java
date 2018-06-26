@@ -6,6 +6,9 @@ import java.util.Map;
 
 public class EntryPoint {
 
+    // todo
+    // make visual tree copy as JSON
+    // update node without removing children
     public static void main(String[] args) {
 
         System.out.println("Hello World");
@@ -14,7 +17,7 @@ public class EntryPoint {
         app.load();
 
         app.setData("this/is/a/test/launch", "hello");
-        while(true){
+        while (true) {
         }
-        }
+    }
 }
