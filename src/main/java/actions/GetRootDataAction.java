@@ -86,8 +86,6 @@ public class GetRootDataAction extends AnAction implements ObserveContract.FireO
                 @Override
                 public void treeNodesChanged(TreeModelEvent e) {
                     Object currentVal = e.getChildren()[0];
-                    logger.log("getTreepath To String<: " + e.getTreePath().toString());
-                    logger.log("getPath To String<: " + e.getPath().toString());
                     Object[] pathToSelectedElement = e.getPath();
                     StringBuilder path = new StringBuilder();
                     for (int i = 0; i < pathToSelectedElement.length; i++) {

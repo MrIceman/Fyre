@@ -2,6 +2,7 @@ package data.impl;
 
 
 import com.google.firebase.database.*;
+import com.google.firebase.database.core.SyncTree;
 import data.FirebaseManager;
 import domain.DataManager;
 import model.FireNode;
@@ -127,23 +128,43 @@ public class DataManagerImpl extends ObserveContract.FireObservable implements D
 
                         if (snapshot.hasChildren()) {
                             DatabaseReference newRef = firebaseManager.getDatabase().getReference(pathToNode).child(value);
+                            logger.log("Following Node Has children: " + newRef.getKey());
                             Map<String, Object> valueMap = new HashMap<>();
                             for (DataSnapshot child : snapshot.getChildren()) {
                                 updateTree("", valueMap, child);
                             }
 
-                            newRef.updateChildren(valueMap, new DatabaseReference.CompletionListener() {
-                                @Override
-                                public void onComplete(DatabaseError error, DatabaseReference ref) {
-                                    if (error != null) {
-                                        logger.log("Error with merging: " + error.getMessage());
-                                        logger.log(error.toString());
-                                    } else
-                                        logger.log("Successfully merged!");
+                            newRef.updateChildren(valueMap, (error, ref) -> {
+                                if (error != null) {
+                                    logger.log("Error with merging: " + error.getMessage());
+                                    logger.log(error.toString());
+                                } else {
+                                    logger.log("Successfully merged!");
+                                    FirebaseDatabase.getInstance().getReference(pathToNode + "/" + oldValue)
+                                            .setValueAsync(null);
                                 }
                             });
-                        } else
-                            snapshot.getRef().setValueAsync(value);
+                        } else {
+                            try {
+                                // We are editing a leaf key!
+                                String snapShotValue = snapshot.getValue().toString();
+                                logger.log("Value: " + snapShotValue);
+                                FirebaseDatabase.getInstance()
+                                        .getReference(pathToNode).child(value).setValue(snapshot.getValue(),
+                                        new DatabaseReference.CompletionListener() {
+                                            @Override
+                                            public void onComplete(DatabaseError error, DatabaseReference ref) {
+                                                FirebaseDatabase.getInstance().getReference(pathToNode + "/" + oldValue)
+                                                        .setValueAsync(null);
+                                            }
+                                        });
+
+                            } catch (Exception e) {
+                                // We are editing a leaf value!
+                                DatabaseReference newRef = firebaseManager.getDatabase().getReference(pathToNode);
+                                newRef.setValueAsync(value);
+                            }
+                        }
                     }
 
                     @Override
