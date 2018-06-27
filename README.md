@@ -1,10 +1,10 @@
-# Fyre
+# VisualFire
 
-Fyre is a Plugin for IntelliJ that allows you to view and update your Firebase Realtime Database (Not sure if I'll add more Features in future, let's finish this first)
+Fyre is a Plugin for IntelliJ that allows you to view and update your Firebase Realtime Database. Further you can copy paste your database (your selected node including all its children) via simple ctrl +c (depending on your OS) or paste any JSON and make it part of your Firebase DB (soon).
 
 ## Getting Started
 
-Put your credentials.json File from Firebase into your src/main/ Folder or specify your own path (coming soon..)
+Compile the Project ( Gradle - RunIDE ) and select from your Toolbar VisualFire -> Open . Go to the Configs Tab and Select the your Firebase Configs JSON File. Switch back to the Database Tab. Congratulations, you can start browsing your Data now. 
 
 ### Prerequisites
 
@@ -20,6 +20,7 @@ As Test-Engine JUnit and Mockito is used.
 * Firebase Admin SDK Java - That domain code wraps around that SDK. 
 * Gradle - Dependency Management
 * Mockito - Mocking and Testing
+* Swing - GUI
 
 
 ## Author
@@ -31,4 +32,4 @@ See also the list of [contributors](https://github.com/your/project/contributors
 
 ## Acknowledgments
 
-* Czarek17
+* Nobody yet :(
