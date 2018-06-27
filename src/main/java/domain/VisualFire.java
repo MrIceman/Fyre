@@ -15,6 +15,7 @@ public class VisualFire extends ObserveContract.FireObservable implements Observ
     private DataManager dataManager;
     private FyreLogger fyreLogger;
     private static VisualFire instance;
+    private boolean initialized;
 
     public static VisualFire getInstance() {
         if (instance == null)
@@ -23,7 +24,7 @@ public class VisualFire extends ObserveContract.FireObservable implements Observ
     }
 
     public VisualFire(FyreLogger fyreLogger) {
-        this(new DataManagerImpl(new FirebaseManager(fyreLogger)), fyreLogger);
+        this(new DataManagerImpl(fyreLogger, new FirebaseManager(fyreLogger)), fyreLogger);
     }
 
     public VisualFire(DataManager dataManager, FyreLogger fyreLogger) {
@@ -36,8 +37,10 @@ public class VisualFire extends ObserveContract.FireObservable implements Observ
             this.pathToCredentials = pathToCredentials;
             this.dataManager.configureFirebase(this.pathToCredentials);
             this.dataManager.getObservable().addObserver(this);
+            initialized = true;
         } catch (IOException e) {
             fyreLogger.log(e.getMessage());
+            initialized = false;
         }
     }
 
@@ -64,5 +67,9 @@ public class VisualFire extends ObserveContract.FireObservable implements Observ
     @Override
     public void update(FireNode data) {
         this.updateAll(data);
+    }
+
+    public boolean isInitialized() {
+        return initialized;
     }
 }

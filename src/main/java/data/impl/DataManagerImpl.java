@@ -2,7 +2,6 @@ package data.impl;
 
 
 import com.google.firebase.database.*;
-import com.google.firebase.database.core.SyncTree;
 import data.FirebaseManager;
 import domain.DataManager;
 import model.FireNode;
@@ -17,8 +16,8 @@ public class DataManagerImpl extends ObserveContract.FireObservable implements D
     private FirebaseManager firebaseManager;
     private FyreLogger logger;
 
-    public DataManagerImpl(FirebaseManager firebaseManager) {
-        this.logger = new FyreLogger();
+    public DataManagerImpl(FyreLogger logger, FirebaseManager firebaseManager) {
+        this.logger = logger;
         this.firebaseManager = firebaseManager;
     }
 
@@ -87,8 +86,6 @@ public class DataManagerImpl extends ObserveContract.FireObservable implements D
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot snapshot) {
-                        logger.log("Current node:" + snapshot.getKey());
-                        logger.log("Updating Node has : " + snapshot.getChildrenCount() + " values");
                         Map<String, Object> valueMap = new HashMap<>();
                         valueMap.put(pathToNode, value);
                         for (DataSnapshot child : snapshot.getChildren()) {
@@ -99,7 +96,6 @@ public class DataManagerImpl extends ObserveContract.FireObservable implements D
                             @Override
                             public void onComplete(DatabaseError error, DatabaseReference ref) {
                                 if (error != null) {
-                                    logger.log("Error with merging: " + error.getMessage());
                                     logger.log(error.toString());
                                 } else
                                     logger.log("Successfully merged!");
@@ -128,7 +124,6 @@ public class DataManagerImpl extends ObserveContract.FireObservable implements D
 
                         if (snapshot.hasChildren()) {
                             DatabaseReference newRef = firebaseManager.getDatabase().getReference(pathToNode).child(value);
-                            logger.log("Following Node Has children: " + newRef.getKey());
                             Map<String, Object> valueMap = new HashMap<>();
                             for (DataSnapshot child : snapshot.getChildren()) {
                                 updateTree("", valueMap, child);
@@ -137,7 +132,6 @@ public class DataManagerImpl extends ObserveContract.FireObservable implements D
                             newRef.updateChildren(valueMap, (error, ref) -> {
                                 if (error != null) {
                                     logger.log("Error with merging: " + error.getMessage());
-                                    logger.log(error.toString());
                                 } else {
                                     logger.log("Successfully merged!");
                                     FirebaseDatabase.getInstance().getReference(pathToNode + "/" + oldValue)

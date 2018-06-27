@@ -1,4 +1,4 @@
-package actions;
+package plugin.actions;
 
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
@@ -7,6 +7,8 @@ import com.intellij.openapi.progress.ProgressManager;
 import domain.VisualFire;
 import model.FireNode;
 import model.ObserveContract;
+import plugin.configs.PluginConfigs;
+import plugin.forms.VFDialog;
 import util.FyreLogger;
 
 import javax.swing.event.TreeModelEvent;
@@ -19,7 +21,7 @@ import java.util.ArrayList;
 
 public class GetRootDataAction extends AnAction implements ObserveContract.FireObserver {
     private VisualFire visualFire;
-    private FireTree dialog;
+    private VFDialog dialog;
     private FyreLogger logger;
     private final String TAG = "GetRootDataAction";
 
@@ -32,9 +34,14 @@ public class GetRootDataAction extends AnAction implements ObserveContract.FireO
 
     @Override
     public void actionPerformed(AnActionEvent e) {
-        dialog = new FireTree();
+        dialog = new VFDialog(e.getProject(), visualFire);
         dialog.pack();
         visualFire.addObserver(this);
+        if (!visualFire.isInitialized()) {
+            String cachedFilePath = PluginConfigs.getInstance(e.getProject()).getConfigFilePath();
+            if (cachedFilePath != null)
+                visualFire.setUp(cachedFilePath);
+        }
         ApplicationManager.getApplication().runWriteAction(() -> {
             logger.log("Loading Root");
             visualFire.load();
