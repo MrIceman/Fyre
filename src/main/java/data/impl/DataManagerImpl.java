@@ -15,10 +15,28 @@ import java.util.Map;
 public class DataManagerImpl extends ObserveContract.FireObservable implements DataManager {
     private FirebaseManager firebaseManager;
     private FyreLogger logger;
+    private ValueEventListener rootListener;
+    private boolean rootListenerAttached = false;
+    private DataSnapshot lastRootSnapshot;
 
     public DataManagerImpl(FyreLogger logger, FirebaseManager firebaseManager) {
         this.logger = logger;
         this.firebaseManager = firebaseManager;
+        rootListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                logger.log("Received a root!");
+                FireNode root = new FireNode("Root");
+                buildFireTree(root, snapshot);
+                updateAll(root);
+                lastRootSnapshot = snapshot;
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+
+            }
+        };
     }
 
     public void configureFirebase(String pathToConfig) throws IOException {
@@ -49,21 +67,11 @@ public class DataManagerImpl extends ObserveContract.FireObservable implements D
     public FireNode getRoot() {
         DatabaseReference ref = this.firebaseManager.getDatabase().getReference();
         logger.log("Getting Root!");
-
-        ref.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot snapshot) {
-                logger.log("Received a root!");
-                FireNode root = new FireNode("Root");
-                buildFireTree(root, snapshot);
-                updateAll(root);
-            }
-
-            @Override
-            public void onCancelled(DatabaseError error) {
-
-            }
-        });
+        if (!rootListenerAttached)
+            ref.addValueEventListener(rootListener);
+        else {
+            rootListener.onDataChange(lastRootSnapshot);
+        }
         return null;
     }
 
