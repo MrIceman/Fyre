@@ -1,6 +1,6 @@
 <idea-plugin>
-    <id>com.nowocode.fyre</id>
-    <name>Fyre</name>
+    <id>com.nowocode.VisualFire</id>
+    <name>VisualFire</name>
     <vendor email="mrtnnwsd@©mail.com" url="http://www.martinnowosad.de">Martin Nowosad</vendor>
 
     <description>Update and Browse your Firebase Database in your IDE</description>
@@ -13,13 +13,15 @@
 
     <extensions defaultExtensionNs="com.intellij">
         <!-- Add your extensions here -->
+        <projectService serviceInterface="plugin.configs.PluginConfigs"
+                        serviceImplementation="plugin.configs.PluginConfigs"/>
     </extensions>
 
     <actions>
-        <group id="Fyre" text="Fyre" description="Greeting menu">
+        <group id="VisualFire" text="VisualFire" description="Greeting menu">
             <add-to-group group-id="MainMenu" anchor="last"/>
-            <action id="Fyre.Setup" class="actions.StartFyreAction" text="Configure" description="Says hello"/>
-            <action id="Fyre.GetRootData" class="actions.GetRootDataAction" text="Show"
+            <action id="Fyre.Setup" class="plugin.actions.StartFyreAction" text="Configure" description="Says hello"/>
+            <action id="Fyre.GetRootData" class="plugin.actions.GetRootDataAction" text="Show"
                     description="Shows the Root Tree "/>
         </group>
     </actions>
