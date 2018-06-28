@@ -13,6 +13,7 @@ import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreePath;
 import java.util.ArrayList;
 
 public class TreeController implements ObserveContract.FireObserver {
@@ -21,22 +22,21 @@ public class TreeController implements ObserveContract.FireObserver {
     private FyreLogger logger;
     private StringBuilder currentSelectedNode = new StringBuilder();
     private DefaultTreeModel model;
-    private Project project;
     private PluginConfigs configs;
+    private TreePath lastSelectedPath;
 
     public TreeController(Project project, JTree tree, VisualFire app) {
         this(project, tree, app, new FyreLogger("TreeController"));
     }
 
     public TreeController(Project project, JTree tree, VisualFire app, FyreLogger logger) {
-        this(project, tree, app, logger, PluginConfigs.getInstance(project));
+        this(tree, app, logger, PluginConfigs.getInstance(project));
     }
 
-    public TreeController(Project project, JTree tree, VisualFire app, FyreLogger logger, PluginConfigs configs) {
+    public TreeController(JTree tree, VisualFire app, FyreLogger logger, PluginConfigs configs) {
         this.tree = tree;
         this.app = app;
         this.logger = logger;
-        this.project = project;
         this.configs = configs;
     }
 
@@ -46,8 +46,8 @@ public class TreeController implements ObserveContract.FireObserver {
             String cachedFilePath = configs.getConfigFilePath();
             if (cachedFilePath != null) {
                 app.setUp(cachedFilePath);
-                    logger.log("Loading Root");
-                    app.load();
+                logger.log("Loading Root");
+                app.load();
             }
         }
         configureTree();
@@ -58,6 +58,7 @@ public class TreeController implements ObserveContract.FireObserver {
             logger.log("Current Selected Node: " + e.getPath().getLastPathComponent().toString());
             currentSelectedNode.delete(0, currentSelectedNode.length());
             currentSelectedNode.append(e.getPath().getLastPathComponent().toString());
+            lastSelectedPath = e.getPath().getParentPath();
         });
 
         this.model = (DefaultTreeModel) this.tree.getModel();
@@ -107,7 +108,8 @@ public class TreeController implements ObserveContract.FireObserver {
         DefaultMutableTreeNode newRoot = rebuildTreeNode(data);
         root.add(newRoot);
         model.reload(root);
-
+        if (this.lastSelectedPath != null)
+            tree.expandPath(lastSelectedPath);
     }
 
 
