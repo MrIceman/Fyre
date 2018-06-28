@@ -8,6 +8,8 @@ import domain.VisualFire;
 import plugin.configs.PluginConfigs;
 
 import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class VFContent {
     private JTabbedPane tabPane;
@@ -17,7 +19,7 @@ public class VFContent {
     private JButton setPathButton;
     private JCheckBox realtimeUpdateCheckBox;
     private JButton addButton;
-    private JButton deleteNodeButton;
+    private JButton refreshButton;
     private JLabel statusText;
     private JPanel contentPanel;
     private JLabel pathLabel;
@@ -46,6 +48,15 @@ public class VFContent {
                 statusText.setVisible(false);
                 dataTree.setVisible(true);
                 pluginConfigured = true;
+                app.load();
+            }
+        });
+
+        refreshButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if ( app.isInitialized() )
+                    app.load();
             }
         });
     }
@@ -106,12 +117,12 @@ public class VFContent {
         this.addButton = addButton;
     }
 
-    public JButton getDeleteNodeButton() {
-        return deleteNodeButton;
+    public JButton getRefreshButton() {
+        return refreshButton;
     }
 
-    public void setDeleteNodeButton(JButton deleteNodeButton) {
-        this.deleteNodeButton = deleteNodeButton;
+    public void setRefreshButton(JButton refreshButton) {
+        this.refreshButton = refreshButton;
     }
 
     public JLabel getStatusText() {

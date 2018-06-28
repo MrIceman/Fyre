@@ -1,14 +1,17 @@
-package plugin.actions;
+package plugin.tools;
 
-import com.intellij.openapi.actionSystem.AnAction;
-import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.progress.ProgressManager;
+import com.intellij.openapi.project.Project;
+import com.intellij.openapi.wm.ToolWindow;
+import com.intellij.openapi.wm.ToolWindowFactory;
+import com.intellij.ui.content.Content;
 import domain.VisualFire;
 import model.FireNode;
 import model.ObserveContract;
+import org.jetbrains.annotations.NotNull;
 import plugin.configs.PluginConfigs;
-import plugin.forms.VFDialog;
+import plugin.forms.VFContent;
 import util.FyreLogger;
 
 import javax.swing.event.TreeModelEvent;
@@ -20,67 +23,63 @@ import javax.swing.tree.DefaultTreeModel;
 import java.util.ArrayList;
 
 @SuppressWarnings("Duplicates")
-public class GetRootDataAction extends AnAction implements ObserveContract.FireObserver {
-    private VisualFire visualFire;
-    private VFDialog dialog;
+public class VFToolWindowFactory implements ToolWindowFactory, ObserveContract.FireObserver {
+    private VFContent content;
+    private VisualFire app;
     private FyreLogger logger;
-    private final String TAG = "GetRootDataAction";
 
-
-    public GetRootDataAction() {
-        super("Getting Root Data");
-        this.logger = new FyreLogger(TAG);
-        visualFire = VisualFire.getInstance();
+    @Override
+    public void createToolWindowContent(@NotNull Project project, @NotNull ToolWindow toolWindow) {
+        logger = new FyreLogger();
+        app = VisualFire.getInstance();
+        app.addObserver(this);
+        content = new VFContent(project, VisualFire.getInstance());
+        toolWindow.setTitle("VisualFire");
+        if (!app.isInitialized()) {
+            String cachedFilePath = PluginConfigs.getInstance(project).getConfigFilePath();
+            if (cachedFilePath != null) {
+                app.setUp(cachedFilePath);
+                ApplicationManager.getApplication().runWriteAction(() -> {
+                    logger.log("Loading Root");
+                    app.load();
+                });
+            }
+        }
     }
 
     @Override
-    public void actionPerformed(AnActionEvent e) {
-        dialog = new VFDialog(e.getProject(), visualFire);
-        dialog.pack();
-        visualFire.addObserver(this);
-        if (!visualFire.isInitialized()) {
-            String cachedFilePath = PluginConfigs.getInstance(e.getProject()).getConfigFilePath();
-            if (cachedFilePath != null)
-                visualFire.setUp(cachedFilePath);
-        }
-        ApplicationManager.getApplication().runWriteAction(() -> {
-            logger.log("Loading Root");
-            visualFire.load();
-        });
+    public void init(ToolWindow window) {
+        Content vfContent = window.getContentManager().getFactory().createContent(content.getContentPanel(),
+                "VisualFire", true);
+        window.getContentManager().addContent(vfContent);
+    }
 
-        dialog.setVisible(true);
+    @Override
+    public boolean shouldBeAvailable(@NotNull Project project) {
+        return false;
+    }
 
+    @Override
+    public boolean isDoNotActivateOnStart() {
+        return false;
     }
 
     @Override
     public void update(FireNode data) {
-        logger.log("Updating Data ");
-        FireNode.printTree(data);
         updateUi(data);
     }
 
-    private void buildTreeRecursively(DefaultMutableTreeNode parentNode,
-                                      ArrayList<FireNode> children) {
-        for (FireNode node : children) {
-            DefaultMutableTreeNode childNode;
-            childNode = new DefaultMutableTreeNode(node.getKey());
-            childNode.setUserObject(node);
-            buildTreeRecursively(childNode, node.getChildren());
-            parentNode.add(childNode);
-
-        }
-    }
-
+    @SuppressWarnings("Duplicates")
     private void updateUi(FireNode data) {
         ProgressManager.progress("Updating UI Tree");
-        DefaultTreeModel model = (DefaultTreeModel) dialog.getTree().getModel();
+        DefaultTreeModel model = (DefaultTreeModel) content.getDataTree().getModel();
         DefaultMutableTreeNode root = (DefaultMutableTreeNode) model.getRoot();
         root.removeAllChildren();
         DefaultMutableTreeNode newRoot = rebuildTreeNode(data);
         root.add(newRoot);
         model.reload(root);
         StringBuilder currentSelectedNode = new StringBuilder();
-        dialog.getTree().addTreeSelectionListener(new TreeSelectionListener() {
+        content.getDataTree().addTreeSelectionListener(new TreeSelectionListener() {
             @Override
             public void valueChanged(TreeSelectionEvent e) {
                 logger.log("Current Selected Node: " + e.getPath().getLastPathComponent().toString());
@@ -103,7 +102,7 @@ public class GetRootDataAction extends AnAction implements ObserveContract.FireO
                     }
                     if (path.length() > 0)
                         path.deleteCharAt(path.length() - 1);
-                    visualFire.updateData(path.toString(), currentSelectedNode.toString(), currentVal.toString());
+                    app.updateData(path.toString(), currentSelectedNode.toString(), currentVal.toString());
 
                 }
 
@@ -132,6 +131,18 @@ public class GetRootDataAction extends AnAction implements ObserveContract.FireO
         rootNode.setUserObject(rootFyreNode);
         buildTreeRecursively(rootNode, rootFyreNode.getChildren());
         return rootNode;
+    }
+
+    private void buildTreeRecursively(DefaultMutableTreeNode parentNode,
+                                      ArrayList<FireNode> children) {
+        for (FireNode node : children) {
+            DefaultMutableTreeNode childNode;
+            childNode = new DefaultMutableTreeNode(node.getKey());
+            childNode.setUserObject(node);
+            buildTreeRecursively(childNode, node.getChildren());
+            parentNode.add(childNode);
+
+        }
     }
 
 }
