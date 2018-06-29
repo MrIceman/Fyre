@@ -34,6 +34,7 @@ As Test-Engine JUnit and Mockito is used.
 * Copy relative path of a node
 * Search through tree
 * Insert / delete a node from tree
+* Unit Tests (yeah, I was too fast on this one..)
 ## Author
 
 * **Martin Nowosad** - *Creator* - [MrIceman](https://github.com/MrIceman)
