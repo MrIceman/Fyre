@@ -22,7 +22,18 @@ As Test-Engine JUnit and Mockito is used.
 * Mockito - Mocking and Testing
 * Swing - GUI
 
+## TO DO before launching first Version
 
+* ~~Write engine for reading and updating data~~
+* ~~Create Swing UI~~
+* ~~Real time updates~~
+* ~~Integrate swing UI into IDE~~
+* Copy to JSON
+* Import from JSON
+* ~~UI Layout~~
+* Copy relative path of a node
+* Search through tree
+* Insert / delete a node from tree
 ## Author
 
 * **Martin Nowosad** - *Creator* - [MrIceman](https://github.com/MrIceman)
