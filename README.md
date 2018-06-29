@@ -33,3 +33,6 @@ See also the list of [contributors](https://github.com/your/project/contributors
 ## Acknowledgments
 
 * Nobody yet :(
+
+![alt text](http://i63.tinypic.com/aypp1y.png)
+
