@@ -1,12 +1,12 @@
-package data.impl;
+package data;
 
 
 import com.google.firebase.database.*;
-import data.FirebaseManager;
 import domain.DataManager;
 import model.FireNode;
 import model.ObserveContract;
 import util.FyreLogger;
+import util.PathExtractor;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -18,10 +18,13 @@ public class DataManagerImpl extends ObserveContract.FireObservable implements D
     private ValueEventListener rootListener;
     private boolean rootListenerAttached = false;
     private DataSnapshot lastRootSnapshot;
+    private PathExtractor pathExtractor;
 
     public DataManagerImpl(FyreLogger logger, FirebaseManager firebaseManager) {
+        // todo - decouple initialzors from constructor for tests
         this.logger = logger;
         this.firebaseManager = firebaseManager;
+        pathExtractor = new PathExtractor();
         rootListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
@@ -86,52 +89,15 @@ public class DataManagerImpl extends ObserveContract.FireObservable implements D
         valueMap.put(newPath, currentSnapshot.getValue());
     }
 
-
     @Override
     public FireNode updateNode(String pathToNode, String value) {
-        DatabaseReference ref = this.firebaseManager.getDatabase().getReference();
         this.firebaseManager.getDatabase().getReference(pathToNode)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot snapshot) {
-                        Map<String, Object> valueMap = new HashMap<>();
-                        valueMap.put(pathToNode, value);
-                        for (DataSnapshot child : snapshot.getChildren()) {
-                            updateTree(pathToNode, valueMap, child);
-                        }
-
-                        FirebaseDatabase.getInstance().getReference().updateChildren(valueMap, new DatabaseReference.CompletionListener() {
-                            @Override
-                            public void onComplete(DatabaseError error, DatabaseReference ref) {
-                                if (error != null) {
-                                    logger.log(error.toString());
-                                } else
-                                    logger.log("Successfully merged!");
-                            }
-                        });
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError error) {
-
-                    }
-                });
-
-        //  ref.updateChildrenAsync(updatedMap);
-        return null;
-    }
-
-    @Override
-    public FireNode updateNode(String pathToNode, String value, String oldValue) {
-        //noinspection Duplicates
-        this.firebaseManager.getDatabase().getReference(pathToNode).child(oldValue)
-                .addListenerForSingleValueEvent(new ValueEventListener() {
-                    @SuppressWarnings("Duplicates")
-                    @Override
-                    public void onDataChange(DataSnapshot snapshot) {
 
                         if (snapshot.hasChildren()) {
-                            DatabaseReference newRef = firebaseManager.getDatabase().getReference(pathToNode).child(value);
+                            DatabaseReference newRef = firebaseManager.getDatabase().getReference(pathExtractor.removeLastPath(pathToNode)).child(value);
                             Map<String, Object> valueMap = new HashMap<>();
                             for (DataSnapshot child : snapshot.getChildren()) {
                                 updateTree("", valueMap, child);
@@ -142,7 +108,7 @@ public class DataManagerImpl extends ObserveContract.FireObservable implements D
                                     logger.log("Error with merging: " + error.getMessage());
                                 } else {
                                     logger.log("Successfully merged!");
-                                    FirebaseDatabase.getInstance().getReference(pathToNode + "/" + oldValue)
+                                    FirebaseDatabase.getInstance().getReference(pathToNode)
                                             .setValueAsync(null);
                                 }
                             });
@@ -152,18 +118,13 @@ public class DataManagerImpl extends ObserveContract.FireObservable implements D
                                 String snapShotValue = snapshot.getValue().toString();
                                 logger.log("Value: " + snapShotValue);
                                 FirebaseDatabase.getInstance()
-                                        .getReference(pathToNode).child(value).setValue(snapshot.getValue(),
-                                        new DatabaseReference.CompletionListener() {
-                                            @Override
-                                            public void onComplete(DatabaseError error, DatabaseReference ref) {
-                                                FirebaseDatabase.getInstance().getReference(pathToNode + "/" + oldValue)
-                                                        .setValueAsync(null);
-                                            }
-                                        });
+                                        .getReference(pathExtractor.removeLastPath(pathToNode)).child(value).setValue(snapshot.getValue(),
+                                        (error, ref) -> FirebaseDatabase.getInstance().getReference(pathToNode)
+                                                .setValueAsync(null));
 
                             } catch (Exception e) {
                                 // We are editing a leaf value!
-                                DatabaseReference newRef = firebaseManager.getDatabase().getReference(pathToNode);
+                                DatabaseReference newRef = firebaseManager.getDatabase().getReference(pathExtractor.removeLastPath(pathToNode));
                                 newRef.setValueAsync(value);
                             }
                         }
@@ -177,32 +138,6 @@ public class DataManagerImpl extends ObserveContract.FireObservable implements D
 
         //  ref.updateChildrenAsync(updatedMap);
         return null;
-    }
-
-    @Override
-    public void renameNode(String pathToNode, String name) {
-        DatabaseReference root = this.firebaseManager.getDatabase().getReference(pathToNode);
-        root.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot snapshot) {
-                FireNode root = new FireNode(name);
-                root.setPath(pathToNode);
-                for (DataSnapshot child : snapshot.getChildren()) {
-                    buildFireTree(root, child);
-                }
-
-                updateNode(pathToNode, name);
-
-                for (FireNode node : root.getChildren()) {
-                    updateNode(node.getPath(), node.getValue());
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError error) {
-
-            }
-        });
     }
 
     @Override

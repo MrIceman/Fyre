@@ -1,14 +1,13 @@
 package domain;
 
 
+import data.DataManagerImpl;
 import data.FirebaseManager;
-import data.impl.DataManagerImpl;
 import model.FireNode;
 import model.ObserveContract;
 import util.FyreLogger;
 
 import java.io.IOException;
-import java.util.Map;
 
 public class VisualFire extends ObserveContract.FireObservable implements ObserveContract.FireObserver {
     private String pathToCredentials;
@@ -56,12 +55,8 @@ public class VisualFire extends ObserveContract.FireObservable implements Observ
         return this.dataManager.updateNode(key, value);
     }
 
-    public FireNode updateData(String path, String oldValue, String value) {
-        return this.dataManager.updateNode(path, value, oldValue);
-    }
-
-    public void renameNode(String pathToNode, String newName) {
-        this.dataManager.renameNode(pathToNode, newName);
+    public FireNode updateData(String path, String value) {
+        return this.dataManager.updateNode(path, value);
     }
 
     @Override

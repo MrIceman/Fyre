@@ -75,9 +75,8 @@ public class TreeController implements ObserveContract.FireObserver {
                     path.append(pathToSelectedElement[i].toString()).append("/");
 
                 }
-                if (path.length() > 0)
-                    path.deleteCharAt(path.length() - 1);
-                app.updateData(path.toString(), currentSelectedNode.toString(), currentVal.toString());
+                path.append(currentSelectedNode.toString());
+                app.updateData(path.toString(), currentVal.toString());
 
             }
 

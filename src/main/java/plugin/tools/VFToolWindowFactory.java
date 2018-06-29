@@ -9,7 +9,6 @@ import org.jetbrains.annotations.NotNull;
 import plugin.controller.TreeController;
 import plugin.forms.VFContent;
 
-@SuppressWarnings("Duplicates")
 public class VFToolWindowFactory implements ToolWindowFactory{
     private VFContent content;
     private TreeController treeController;
