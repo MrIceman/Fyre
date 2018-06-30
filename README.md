@@ -1,6 +1,6 @@
 # VisualFire
 
-Fyre is a Plugin for IntelliJ that allows you to view and update your Firebase Realtime Database. Further you can copy paste your database (your selected node including all its children) via simple ctrl +c (depending on your OS) or paste any JSON and make it part of your Firebase DB (soon).
+VisualFire is a Plugin for IntelliJ that allows you to view and update your Firebase Realtime Database. Further you can copy paste your database (your selected node including all its children) via simple ctrl +c (depending on your OS) or paste any JSON and make it part of your Firebase DB (soon).
 
 ## Getting Started
 
