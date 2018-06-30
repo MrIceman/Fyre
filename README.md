@@ -32,7 +32,7 @@ As Test-Engine JUnit and Mockito is used.
 * Import from JSON
 * ~~UI Layout~~
 * Copy relative path of a node
-* Insert / delete a node from tree
+*  Insert / delete a node from tree  (In Progress...)
 * Unit Tests (yeah, I was too fast on this one..)
 
 ## Future TODOs
