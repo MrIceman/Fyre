@@ -5,7 +5,11 @@
       <xy x="20" y="20" width="715" height="454"/>
     </constraints>
     <properties>
+      <doubleBuffered value="true"/>
       <enabled value="true"/>
+      <focusable value="true"/>
+      <opaque value="true"/>
+      <visible value="true"/>
     </properties>
     <border type="none"/>
     <children>
@@ -36,11 +40,39 @@
               <inheritsPopupMenu value="false"/>
               <minimumSize width="24" height="24"/>
             </properties>
-            <border type="none"/>
+            <border type="none" title=""/>
             <children>
+              <component id="1cf1a" class="javax.swing.JButton" binding="refreshButton">
+                <constraints>
+                  <grid row="2" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                  <gridbag top="0" left="16" bottom="8" right="16" weightx="0.1" weighty="0.0"/>
+                </constraints>
+                <properties>
+                  <text value="Refresh"/>
+                </properties>
+              </component>
+              <component id="63e60" class="javax.swing.JLabel" binding="statusText">
+                <constraints>
+                  <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                  <gridbag weightx="1.0" weighty="0.7"/>
+                </constraints>
+                <properties>
+                  <alignmentX value="0.5"/>
+                  <alignmentY value="0.0"/>
+                  <autoscrolls value="false"/>
+                  <doubleBuffered value="false"/>
+                  <enabled value="true"/>
+                  <focusCycleRoot value="false"/>
+                  <horizontalAlignment value="0"/>
+                  <horizontalTextPosition value="0"/>
+                  <requestFocusEnabled value="true"/>
+                  <text value="Please set up your Configuration first"/>
+                  <visible value="false"/>
+                </properties>
+              </component>
               <component id="1de80" class="javax.swing.JTree" binding="dataTree">
                 <constraints>
-                  <grid row="1" column="0" row-span="1" col-span="4" vsize-policy="6" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false">
+                  <grid row="1" column="0" row-span="1" col-span="2" vsize-policy="6" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false">
                     <minimum-size width="2" height="-1"/>
                     <preferred-size width="150" height="50"/>
                   </grid>
@@ -56,63 +88,48 @@
                   <name value="tree"/>
                   <requestFocusEnabled value="true"/>
                   <rootVisible value="true"/>
-                  <visible value="false"/>
+                  <visible value="true"/>
                   <visibleRowCount value="200"/>
                 </properties>
                 <clientProperties>
                   <JTree.lineStyle class="java.lang.String" value=""/>
                 </clientProperties>
               </component>
-              <component id="efba4" class="javax.swing.JButton" binding="addButton">
+              <splitpane id="4f347">
                 <constraints>
-                  <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-                  <gridbag top="0" left="16" bottom="8" right="16" weightx="0.0" weighty="0.0"/>
-                </constraints>
-                <properties>
-                  <text value="New Node"/>
-                </properties>
-              </component>
-              <component id="1cf1a" class="javax.swing.JButton" binding="refreshButton">
-                <constraints>
-                  <grid row="2" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-                  <gridbag top="0" left="16" bottom="8" right="16" weightx="0.0" weighty="0.0"/>
-                </constraints>
-                <properties>
-                  <text value="Refresh"/>
-                </properties>
-              </component>
-              <component id="6ee06" class="javax.swing.JTextField" binding="treeSearchInput">
-                <constraints>
-                  <grid row="2" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false">
-                    <preferred-size width="150" height="-1"/>
+                  <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false">
+                    <preferred-size width="200" height="200"/>
                   </grid>
-                  <gridbag top="0" left="64" bottom="8" right="16" weightx="0.4" weighty="0.0"/>
+                  <gridbag top="0" left="16" bottom="8" right="16" weightx="0.8" weighty="0.0"/>
                 </constraints>
                 <properties>
-                  <horizontalAlignment value="0"/>
-                  <text value="Search"/>
-                  <visible value="true"/>
+                  <background color="-13289151"/>
+                  <enabled value="false"/>
+                  <inheritsPopupMenu value="false"/>
+                  <opaque value="false"/>
                 </properties>
-              </component>
-              <component id="63e60" class="javax.swing.JLabel" binding="statusText">
-                <constraints>
-                  <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-                  <gridbag weightx="1.0" weighty="0.7"/>
-                </constraints>
-                <properties>
-                  <alignmentX value="0.5"/>
-                  <alignmentY value="0.0"/>
-                  <autoscrolls value="false"/>
-                  <doubleBuffered value="false"/>
-                  <enabled value="true"/>
-                  <focusCycleRoot value="false"/>
-                  <horizontalAlignment value="0"/>
-                  <horizontalTextPosition value="0"/>
-                  <requestFocusEnabled value="true"/>
-                  <text value="Please set up your Configuration first"/>
-                  <visible value="true"/>
-                </properties>
-              </component>
+                <border type="none"/>
+                <children>
+                  <component id="65b5e" class="javax.swing.JButton" binding="addButton" default-binding="true">
+                    <constraints>
+                      <splitpane position="left"/>
+                    </constraints>
+                    <properties>
+                      <enabled value="false"/>
+                      <text value="Add"/>
+                    </properties>
+                  </component>
+                  <component id="c64e7" class="javax.swing.JTextField" binding="newNodeInput">
+                    <constraints>
+                      <splitpane position="right"/>
+                    </constraints>
+                    <properties>
+                      <enabled value="false"/>
+                      <text value="New Node (Currently Disabled)"/>
+                    </properties>
+                  </component>
+                </children>
+              </splitpane>
             </children>
           </grid>
           <grid id="f508a" layout-manager="GridBagLayout">

@@ -51,8 +51,8 @@ public class VisualFire extends ObserveContract.FireObservable implements Observ
         return this.dataManager.getNode(node);
     }
 
-    public FireNode setData(String key, String value) {
-        return this.dataManager.updateNode(key, value);
+    public void insert(String path, String value) {
+        this.dataManager.addNode(path, value);
     }
 
     public FireNode updateData(String path, String value) {

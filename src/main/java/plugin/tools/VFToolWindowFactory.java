@@ -17,6 +17,7 @@ public class VFToolWindowFactory implements ToolWindowFactory{
     public void createToolWindowContent(@NotNull Project project, @NotNull ToolWindow toolWindow) {
         content = new VFContent(project, VisualFire.getInstance());
         treeController = new TreeController(project, content.getDataTree(), VisualFire.getInstance());
+        content.setAddNodeListener(treeController);
         treeController.init();
         toolWindow.setTitle("VisualFire");
     }

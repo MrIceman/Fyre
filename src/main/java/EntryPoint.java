@@ -1,9 +1,6 @@
 import domain.VisualFire;
 import util.FyreLogger;
 
-import java.util.HashMap;
-import java.util.Map;
-
 public class EntryPoint {
 
     // todo
@@ -16,7 +13,7 @@ public class EntryPoint {
         app.setUp("src/main/java/firebase-config.json");
         app.load();
 
-        app.setData("this/is/a/test/launch", "hello");
+        app.insert("this/is/a/test/launch", "hello");
         while (true) {
         }
     }

@@ -6,6 +6,7 @@ import domain.VisualFire;
 import model.FireNode;
 import model.ObserveContract;
 import plugin.configs.PluginConfigs;
+import plugin.forms.VFContent;
 import util.FyreLogger;
 
 import javax.swing.*;
@@ -13,17 +14,15 @@ import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreePath;
 import java.util.ArrayList;
 
-public class TreeController implements ObserveContract.FireObserver {
+public class TreeController implements ObserveContract.FireObserver, VFContent.AddNodeListener {
     private JTree tree;
     private VisualFire app;
     private FyreLogger logger;
-    private StringBuilder currentSelectedNode = new StringBuilder();
     private DefaultTreeModel model;
     private PluginConfigs configs;
-    private TreePath lastSelectedPath;
+    private String lastSelectedPath;
 
     public TreeController(Project project, JTree tree, VisualFire app) {
         this(project, tree, app, new FyreLogger("TreeController"));
@@ -55,9 +54,8 @@ public class TreeController implements ObserveContract.FireObserver {
 
     private void configureTree() {
         this.tree.addTreeSelectionListener(e -> {
-            setCurrentSelectedNode(e.getPath().getLastPathComponent().toString());
-            lastSelectedPath = e.getPath();
-            logger.log("Last selected Path: " + lastSelectedPath.toString());
+            lastSelectedPath = getPath(e.getPath().getPath());
+            logger.log("Selected path: " + lastSelectedPath);
         });
 
         this.model = (DefaultTreeModel) this.tree.getModel();
@@ -65,9 +63,11 @@ public class TreeController implements ObserveContract.FireObserver {
         model.addTreeModelListener(new TreeModelListener() {
             @Override
             public void treeNodesChanged(TreeModelEvent e) {
+                if (e.getPath().length <= 2)
+                    return;
+
                 Object currentVal = e.getChildren()[0];
-                Object[] pathToSelectedElement = e.getPath();
-                updateNode(pathToSelectedElement, currentVal.toString());
+                updateNode(currentVal.toString());
             }
 
             @Override
@@ -88,23 +88,28 @@ public class TreeController implements ObserveContract.FireObserver {
         });
     }
 
-    private void setCurrentSelectedNode(String node) {
-        currentSelectedNode.delete(0, currentSelectedNode.length());
-        currentSelectedNode.append(node);
+    private void updateNode(String value) {
+        String path = lastSelectedPath;
+        logger.log("updating path: " + path + " /  value: " + value);
+        app.updateData(path, value);
     }
 
-    private void updateNode(Object[] pathToSelectedElement, String value) {
+    private String getPath(Object[] pathElements) {
+        // <= 2 to ignore the first 2 default nodes which come with Swing
+        if (pathElements.length <= 2)
+            return "";
         StringBuilder path = new StringBuilder();
-        for (int i = 0; i < pathToSelectedElement.length; i++) {
+        for (int i = 0; i < pathElements.length; i++) {
             if (i == 0 || i == 1)
                 continue;
-            path.append(pathToSelectedElement[i].toString()).append("/");
+            path.append(pathElements[i].toString()).append("/");
 
         }
-        path.append(currentSelectedNode.toString());
-        logger.log("updating path: " + path + " /  value: " + value);
+        if (path.lastIndexOf("/") == path.length() - 1) {
+            path.deleteCharAt(path.lastIndexOf("/"));
+        }
 
-        app.updateData(path.toString(), value);
+        return path.toString();
     }
 
     public void updateTree(FireNode data) {
@@ -114,8 +119,8 @@ public class TreeController implements ObserveContract.FireObserver {
         DefaultMutableTreeNode newRoot = rebuildTreeNode(data);
         root.add(newRoot);
         model.reload(root);
-        if (this.lastSelectedPath != null)
-            tree.expandPath(lastSelectedPath);
+        //if (this.lastSelectedPath != null)
+        //   tree.expandPath(lastSelectedPath);
     }
 
 
@@ -141,5 +146,15 @@ public class TreeController implements ObserveContract.FireObserver {
     @Override
     public void update(FireNode data) {
         updateTree(data);
+    }
+
+    @Override
+    public void onAddNode(String node) {
+        this.app.insert(lastSelectedPath, node);
+    }
+
+    @Override
+    public void onDeleteNode(String path) {
+
     }
 }

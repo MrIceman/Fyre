@@ -8,8 +8,7 @@ import domain.VisualFire;
 import plugin.configs.PluginConfigs;
 
 import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+
 
 public class VFContent {
     private JTabbedPane tabPane;
@@ -23,9 +22,27 @@ public class VFContent {
     private JLabel statusText;
     private JPanel contentPanel;
     private JLabel pathLabel;
+    private JTextField newNodeInput;
     private Project project;
     private boolean pluginConfigured = false;
     private VisualFire app;
+    private AddNodeListener addNodeListener;
+
+    public void setAddNodeListener(AddNodeListener addNodeListener) {
+        this.addNodeListener = addNodeListener;
+
+        addButton.addActionListener((e) -> {
+                    if (newNodeInput.getText().length() > 0)
+                        addNodeListener.onAddNode(newNodeInput.getText());
+                }
+        );
+    }
+
+    public interface AddNodeListener {
+        void onAddNode(String node);
+
+        void onDeleteNode(String path);
+    }
 
     private void createUIComponents() {
 
@@ -54,7 +71,7 @@ public class VFContent {
         });
 
         refreshButton.addActionListener(e -> {
-            if ( app.isInitialized() )
+            if (app.isInitialized())
                 app.load();
         });
     }
