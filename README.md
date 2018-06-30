@@ -4,7 +4,7 @@ Fyre is a Plugin for IntelliJ that allows you to view and update your Firebase R
 
 ## Getting Started
 
-Compile the Project ( Gradle - RunIDE ) and select from your Toolbar VisualFire -> Open . Go to the Configs Tab and Select the your Firebase Configs JSON File. Switch back to the Database Tab. Congratulations, you can start browsing your Data now. 
+Compile the Project ( Gradle - RunIDE ), got Views -> Tools -> VisualFire. Now you'll see on the right side of your IDE a tab "VisualFire". Open it, switch to the tab "Configs" and select your Firebase configs .JSON File. If you have selected a valid JSON File, your database should be loaded now. You can edit your nodes via double clicking on them. Have fun coding  
 
 ### Prerequisites
 
@@ -32,9 +32,14 @@ As Test-Engine JUnit and Mockito is used.
 * Import from JSON
 * ~~UI Layout~~
 * Copy relative path of a node
-* Search through tree
 * Insert / delete a node from tree
 * Unit Tests (yeah, I was too fast on this one..)
+
+## Future TODOs
+* Add Auto Complete
+* Search through tree
+* Add more Firebase Services (Storage, Security Rules, Cloud Functions, ...)
+
 ## Author
 
 * **Martin Nowosad** - *Creator* - [MrIceman](https://github.com/MrIceman)
