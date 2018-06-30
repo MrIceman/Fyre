@@ -8,7 +8,11 @@ public class PathExtractor {
     }
 
     public String removeLastPath(String path) {
-        int lastSlashIndex = path.lastIndexOf('/');
-        return path.substring(0, lastSlashIndex);
+        try {
+            int lastSlashIndex = path.lastIndexOf('/');
+            return path.substring(0, lastSlashIndex);
+        } catch (Exception e) {
+            return path;
+        }
     }
 }

@@ -32,6 +32,7 @@ public class VFContent {
     }
 
     public VFContent(Project p, VisualFire app) {
+        this.project = p;
         pluginConfigured = PluginConfigs.getInstance(p).getConfigFilePath() != null;
         if (pluginConfigured) {
             pathLabel.setText(PluginConfigs.getInstance(p).getConfigFilePath());
@@ -42,8 +43,8 @@ public class VFContent {
         setPathButton.addActionListener(e -> {
             VirtualFile file = FileChooser.chooseFile(new FileChooserDescriptor(true, false, false, false, false, false), project, null);
             if (file != null) {
-                app.setUp(file.getPath());
                 PluginConfigs.getInstance(project).setConfigFilePath(file.getPath());
+                app.setUp(file.getPath());
                 pathLabel.setText(PluginConfigs.getInstance(p).getConfigFilePath());
                 statusText.setVisible(false);
                 dataTree.setVisible(true);
@@ -52,12 +53,9 @@ public class VFContent {
             }
         });
 
-        refreshButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if ( app.isInitialized() )
-                    app.load();
-            }
+        refreshButton.addActionListener(e -> {
+            if ( app.isInitialized() )
+                app.load();
         });
     }
 

@@ -1,6 +1,6 @@
 import com.google.firebase.database.FirebaseDatabase;
+import data.DataManagerImpl;
 import data.FirebaseManager;
-import data.impl.DataManagerImpl;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;

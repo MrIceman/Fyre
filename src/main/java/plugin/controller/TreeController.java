@@ -55,10 +55,9 @@ public class TreeController implements ObserveContract.FireObserver {
 
     private void configureTree() {
         this.tree.addTreeSelectionListener(e -> {
-            logger.log("Current Selected Node: " + e.getPath().getLastPathComponent().toString());
-            currentSelectedNode.delete(0, currentSelectedNode.length());
-            currentSelectedNode.append(e.getPath().getLastPathComponent().toString());
-            lastSelectedPath = e.getPath().getParentPath();
+            setCurrentSelectedNode(e.getPath().getLastPathComponent().toString());
+            lastSelectedPath = e.getPath();
+            logger.log("Last selected Path: " + lastSelectedPath.toString());
         });
 
         this.model = (DefaultTreeModel) this.tree.getModel();
@@ -68,16 +67,7 @@ public class TreeController implements ObserveContract.FireObserver {
             public void treeNodesChanged(TreeModelEvent e) {
                 Object currentVal = e.getChildren()[0];
                 Object[] pathToSelectedElement = e.getPath();
-                StringBuilder path = new StringBuilder();
-                for (int i = 0; i < pathToSelectedElement.length; i++) {
-                    if (i == 0 || i == 1)
-                        continue;
-                    path.append(pathToSelectedElement[i].toString()).append("/");
-
-                }
-                path.append(currentSelectedNode.toString());
-                app.updateData(path.toString(), currentVal.toString());
-
+                updateNode(pathToSelectedElement, currentVal.toString());
             }
 
             @Override
@@ -96,11 +86,28 @@ public class TreeController implements ObserveContract.FireObserver {
 
             }
         });
+    }
 
+    private void setCurrentSelectedNode(String node) {
+        currentSelectedNode.delete(0, currentSelectedNode.length());
+        currentSelectedNode.append(node);
+    }
+
+    private void updateNode(Object[] pathToSelectedElement, String value) {
+        StringBuilder path = new StringBuilder();
+        for (int i = 0; i < pathToSelectedElement.length; i++) {
+            if (i == 0 || i == 1)
+                continue;
+            path.append(pathToSelectedElement[i].toString()).append("/");
+
+        }
+        path.append(currentSelectedNode.toString());
+        logger.log("updating path: " + path + " /  value: " + value);
+
+        app.updateData(path.toString(), value);
     }
 
     public void updateTree(FireNode data) {
-
         ProgressManager.progress("Updating UI Tree");
         DefaultMutableTreeNode root = (DefaultMutableTreeNode) model.getRoot();
         root.removeAllChildren();

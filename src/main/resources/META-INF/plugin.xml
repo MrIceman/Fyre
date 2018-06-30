@@ -21,10 +21,5 @@
 
 
     <actions>
-        <group id="VisualFire" text="VisualFire" description="Greeting menu">
-            <add-to-group group-id="MainMenu" anchor="last"/>
-            <action id="VisualFire.GetRootData" class="plugin.actions.GetRootDataAction" text="Show"
-                    description="Shows the Root Tree "/>
-        </group>
     </actions>
 </idea-plugin>
