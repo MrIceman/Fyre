@@ -1,5 +1,6 @@
 package plugin.controller;
 
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.project.Project;
 import domain.VisualFire;
@@ -81,7 +82,7 @@ public class TreeController implements ObserveContract.FireObserver, VFContent.A
             }
 
             @Override
-            public void treeStructureChanged(TreeModelEvent e) {
+            public void treeStructureChanged(TreeModelEvent e) { 
                 logger.log("Tree structure changed!");
 
             }

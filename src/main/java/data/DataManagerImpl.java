@@ -98,7 +98,7 @@ public class DataManagerImpl extends ObserveContract.FireObservable implements D
                         if (snapshot.hasChildren()) {
                             logger.log("Obtained node: " + snapshot.getKey());
                             String parentReference = pathExtractor.removeLastPath(pathToNode);
-                            DatabaseReference newRef = firebaseManager.getDatabase().getReference().child(value);
+                            DatabaseReference newRef = firebaseManager.getDatabase().getReference().child(parentReference).child(value);
                             Map<String, Object> valueMap = new HashMap<>();
                             for (DataSnapshot child : snapshot.getChildren()) {
                                 updateTree("", valueMap, child);
@@ -115,7 +115,7 @@ public class DataManagerImpl extends ObserveContract.FireObservable implements D
                             });
                         } else {
                             try {
-                                logger.log("Ediring a Key ");
+                                logger.log("Editing a Key ");
                                 // We are editing a leaf key!
                                 String snapShotValue = snapshot.getValue().toString();
                                 logger.log("Value: " + snapShotValue);
