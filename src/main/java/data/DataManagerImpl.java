@@ -5,6 +5,7 @@ import com.google.firebase.database.*;
 import domain.DataManager;
 import model.FireNode;
 import model.ObserveContract;
+import model.protocol.UpdateType;
 import util.FyreLogger;
 import util.PathExtractor;
 
@@ -31,7 +32,7 @@ public class DataManagerImpl extends ObserveContract.FireObservable implements D
                 logger.log("Received a root!");
                 FireNode root = new FireNode("Root");
                 buildFireTree(root, snapshot);
-                updateAll(root);
+                updateAll(UpdateType.ROOT_DATA_LOADED, root);
                 lastRootSnapshot = snapshot;
             }
 
@@ -44,6 +45,7 @@ public class DataManagerImpl extends ObserveContract.FireObservable implements D
 
     public void configureFirebase(String pathToConfig) throws IOException {
         this.firebaseManager.init(pathToConfig, "https://breathe-a7606.firebaseio.com");
+        this.update(UpdateType.FIREBASE_INIT_SUCCESS, null);
     }
 
     @Override
@@ -154,7 +156,7 @@ public class DataManagerImpl extends ObserveContract.FireObservable implements D
     }
 
     @Override
-    public void update(FireNode data) {
-        this.updateAll(data);
+    public void update(UpdateType type, FireNode data) {
+        this.updateAll(type, data);
     }
 }

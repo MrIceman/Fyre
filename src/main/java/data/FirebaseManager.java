@@ -10,7 +10,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 
 @SuppressWarnings("SpellCheckingInspection")
-public class FirebaseManager  {
+public class FirebaseManager {
     private final String TAG = "FirebaseManager";
     private FyreLogger fyreLogger;
 

@@ -18,6 +18,7 @@ import org.jetbrains.annotations.Nullable;
         })
 public class PluginConfigs implements PersistentStateComponent<PluginConfigs> {
     String configFilePath;
+    public boolean realTimeUpdate;
 
     public String getConfigFilePath() {
         return configFilePath;

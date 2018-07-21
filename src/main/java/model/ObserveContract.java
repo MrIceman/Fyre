@@ -1,10 +1,12 @@
 package model;
 
+import model.protocol.UpdateType;
+
 import java.util.ArrayList;
 
 public interface ObserveContract {
     public interface FireObserver {
-        void update(FireNode data);
+        void update(UpdateType type, FireNode data);
     }
 
     public abstract class FireObservable {
@@ -26,9 +28,9 @@ public interface ObserveContract {
             this.observers.remove(observer);
         }
 
-        public void updateAll(FireNode data) {
+        public void updateAll(UpdateType type, FireNode data) {
             for (FireObserver observer : observers) {
-                observer.update(data);
+                observer.update(type, data);
             }
         }
     }

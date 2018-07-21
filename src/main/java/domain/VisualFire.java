@@ -5,12 +5,12 @@ import data.DataManagerImpl;
 import data.FirebaseManager;
 import model.FireNode;
 import model.ObserveContract;
+import model.protocol.UpdateType;
 import util.FyreLogger;
 
 import java.io.IOException;
 
 public class VisualFire extends ObserveContract.FireObservable implements ObserveContract.FireObserver {
-    private String pathToCredentials;
     private DataManager dataManager;
     private FyreLogger fyreLogger;
     private static VisualFire instance;
@@ -33,9 +33,8 @@ public class VisualFire extends ObserveContract.FireObservable implements Observ
 
     public void setUp(String pathToCredentials) {
         try {
-            this.pathToCredentials = pathToCredentials;
-            this.dataManager.configureFirebase(this.pathToCredentials);
             this.dataManager.getObservable().addObserver(this);
+            this.dataManager.configureFirebase(pathToCredentials);
             initialized = true;
         } catch (IOException e) {
             fyreLogger.log(e.getMessage());
@@ -60,8 +59,10 @@ public class VisualFire extends ObserveContract.FireObservable implements Observ
     }
 
     @Override
-    public void update(FireNode data) {
-        this.updateAll(data);
+    public void update(UpdateType type, FireNode data) {
+        // todo do handling here
+        if (type != UpdateType.FIREBASE_INIT_SUCCESS)
+            this.updateAll(type, data);
     }
 
     public boolean isInitialized() {
