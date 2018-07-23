@@ -13,7 +13,7 @@ public class EntryPoint {
         app.setUp("src/main/java/firebase-config.json");
         app.load();
 
-        app.insert("this/is/a/test/launch", "hello");
+       //  app.insert("this/is/a/test/launch", "hello");
         while (true) {
         }
     }

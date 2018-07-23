@@ -1,11 +1,11 @@
 package plugin.controller;
 
-import com.google.firebase.messaging.FirebaseMessaging;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.project.Project;
 import domain.VisualFire;
 import model.FireNode;
 import model.ObserveContract;
+import model.protocol.UpdateType;
 import plugin.configs.PluginConfigs;
 import plugin.forms.VFContent;
 import util.FyreLogger;
@@ -16,6 +16,8 @@ import javax.swing.event.TreeModelListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class TreeController implements ObserveContract.FireObserver, VFContent.AddNodeListener {
     private JTree tree;
@@ -24,6 +26,7 @@ public class TreeController implements ObserveContract.FireObserver, VFContent.A
     private DefaultTreeModel model;
     private PluginConfigs configs;
     private String lastSelectedPath;
+    private DefaultMutableTreeNode lastSelectedNode;
 
     public TreeController(Project project, JTree tree, VisualFire app) {
         this(project, tree, app, new FyreLogger("TreeController"));
@@ -55,6 +58,8 @@ public class TreeController implements ObserveContract.FireObserver, VFContent.A
 
     private void configureTree() {
         this.tree.addTreeSelectionListener(e -> {
+            lastSelectedNode = (DefaultMutableTreeNode) e.getPath().getLastPathComponent();
+            logger.log("Last selected Node: " + lastSelectedNode.getUserObject().toString());
             lastSelectedPath = getPath(e.getPath().getPath());
             logger.log("Selected path: " + lastSelectedPath);
         });
@@ -66,7 +71,6 @@ public class TreeController implements ObserveContract.FireObserver, VFContent.A
             public void treeNodesChanged(TreeModelEvent e) {
                 if (e.getPath().length <= 2)
                     return;
-
                 Object currentVal = e.getChildren()[0];
                 updateNode(currentVal.toString());
             }
@@ -82,7 +86,7 @@ public class TreeController implements ObserveContract.FireObserver, VFContent.A
             }
 
             @Override
-            public void treeStructureChanged(TreeModelEvent e) { 
+            public void treeStructureChanged(TreeModelEvent e) {
                 logger.log("Tree structure changed!");
 
             }
@@ -140,18 +144,23 @@ public class TreeController implements ObserveContract.FireObserver, VFContent.A
             childNode.setUserObject(node);
             buildTreeRecursively(childNode, node.getChildren());
             parentNode.add(childNode);
-
         }
     }
 
     @Override
-    public void update(FireNode data) {
+    public void update(UpdateType type, FireNode data) {
         updateTree(data);
     }
 
     @Override
-    public void onAddNode(String node) {
-        this.app.insert(lastSelectedPath, node);
+    public void onAddNode(String key, String value) {
+        Map<String, Object> values = new HashMap<>();
+        values.put(key, value);
+        DefaultTreeModel model = (DefaultTreeModel) tree.getModel();
+        DefaultMutableTreeNode newNode = new DefaultMutableTreeNode(key);
+        newNode.add(new DefaultMutableTreeNode(value));
+        model.insertNodeInto(newNode, lastSelectedNode, lastSelectedNode.getChildCount());
+        this.app.insert(lastSelectedPath, values);
     }
 
     @Override

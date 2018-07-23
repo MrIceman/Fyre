@@ -22,6 +22,8 @@ public class VFContent {
     private JLabel statusText;
     private JPanel contentPanel;
     private JLabel pathLabel;
+    private JTextField keyInput;
+    private JTextField valueInput;
     private JTextField newNodeInput;
     private Project project;
     private boolean pluginConfigured = false;
@@ -32,14 +34,14 @@ public class VFContent {
         this.addNodeListener = addNodeListener;
 
         addButton.addActionListener((e) -> {
-                    if (newNodeInput.getText().length() > 0)
-                        addNodeListener.onAddNode(newNodeInput.getText());
+                    if (keyInput.getText().length() > 0 && valueInput.getText().length() > 0)
+                        addNodeListener.onAddNode(keyInput.getText(), valueInput.getText());
                 }
         );
     }
 
     public interface AddNodeListener {
-        void onAddNode(String node);
+        void onAddNode(String key, String value);
 
         void onDeleteNode(String path);
     }
@@ -154,5 +156,65 @@ public class VFContent {
 
     public void setContentPanel(JPanel contentPanel) {
         this.contentPanel = contentPanel;
+    }
+
+    public JLabel getPathLabel() {
+        return pathLabel;
+    }
+
+    public void setPathLabel(JLabel pathLabel) {
+        this.pathLabel = pathLabel;
+    }
+
+    public JTextField getKeyInput() {
+        return keyInput;
+    }
+
+    public void setKeyInput(JTextField keyInput) {
+        this.keyInput = keyInput;
+    }
+
+    public JTextField getValueInput() {
+        return valueInput;
+    }
+
+    public void setValueInput(JTextField valueInput) {
+        this.valueInput = valueInput;
+    }
+
+    public JTextField getNewNodeInput() {
+        return newNodeInput;
+    }
+
+    public void setNewNodeInput(JTextField newNodeInput) {
+        this.newNodeInput = newNodeInput;
+    }
+
+    public Project getProject() {
+        return project;
+    }
+
+    public void setProject(Project project) {
+        this.project = project;
+    }
+
+    public boolean isPluginConfigured() {
+        return pluginConfigured;
+    }
+
+    public void setPluginConfigured(boolean pluginConfigured) {
+        this.pluginConfigured = pluginConfigured;
+    }
+
+    public VisualFire getApp() {
+        return app;
+    }
+
+    public void setApp(VisualFire app) {
+        this.app = app;
+    }
+
+    public AddNodeListener getAddNodeListener() {
+        return addNodeListener;
     }
 }

@@ -9,6 +9,7 @@ import model.protocol.UpdateType;
 import util.FyreLogger;
 
 import java.io.IOException;
+import java.util.Map;
 
 public class VisualFire extends ObserveContract.FireObservable implements ObserveContract.FireObserver {
     private DataManager dataManager;
@@ -50,7 +51,7 @@ public class VisualFire extends ObserveContract.FireObservable implements Observ
         return this.dataManager.getNode(node);
     }
 
-    public void insert(String path, String value) {
+    public void insert(String path, Map<String, Object> value) {
         this.dataManager.addNode(path, value);
     }
 
@@ -60,7 +61,6 @@ public class VisualFire extends ObserveContract.FireObservable implements Observ
 
     @Override
     public void update(UpdateType type, FireNode data) {
-        // todo do handling here
         if (type != UpdateType.FIREBASE_INIT_SUCCESS)
             this.updateAll(type, data);
     }
