@@ -69,8 +69,12 @@ public class TreeController implements ObserveContract.FireObserver, VFContent.A
         model.addTreeModelListener(new TreeModelListener() {
             @Override
             public void treeNodesChanged(TreeModelEvent e) {
-                if (e.getPath().length <= 2)
+                logger.log("Editing Path length: " + e.getTreePath().toString());
+
+                if (e.getPath().length < 2) {
+                    logger.log("Won't update cuz length <= 2");
                     return;
+                }
                 Object currentVal = e.getChildren()[0];
                 updateNode(currentVal.toString());
             }
