@@ -17,11 +17,11 @@ public class TestVisualFire {
     private VisualFire subject;
 
     public TestVisualFire() {
-        subject = new VisualFire(path, dataManager, logger);
+        subject = new VisualFire(dataManager, logger);
     }
 
     public void test_setUp() {
-        subject.setUp();
+        subject.setUp(path);
 
         try {
             verify(dataManager).configureFirebase(path);
