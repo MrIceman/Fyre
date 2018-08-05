@@ -62,7 +62,7 @@ public class FireNode {
         return this.children.isEmpty();
     }
 
-    public void appendNode(FireNode node) {
+    public void addChild(FireNode node) {
         node.setParent(this);
         node.path = this.getPath() + "/" + node.getKey();
         this.children.add(node);
@@ -79,6 +79,10 @@ public class FireNode {
         for (FireNode data : source.getChildren()) {
             printTree(data);
         }
+    }
+
+    public boolean hasChildren() {
+        return this.getChildren().size() > 0;
     }
 
     public FireNode getRoot() {

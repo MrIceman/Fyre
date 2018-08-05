@@ -16,7 +16,7 @@ public class FiredataMapper {
         for (DataSnapshot c : rootSnapshot.getChildren()) {
             // child object
             FireNode child = new FireNode(c.getKey());
-            root.appendNode(child);
+            root.addChild(child);
         }
         while(it.hasNext()) {
 

@@ -67,13 +67,13 @@ public class DataManagerImpl extends ObserveContract.FireObservable implements D
         FireNode node;
         if (!snapshot.hasChildren()) {
             node = new FireNode(snapshot.getValue().toString());
-            parent.appendNode(node);
+            parent.addChild(node);
 
         }
 
         for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
             node = new FireNode(dataSnapshot.getKey());
-            parent.appendNode(node);
+            parent.addChild(node);
             this.buildFireTree(node, dataSnapshot);
         }
     }
