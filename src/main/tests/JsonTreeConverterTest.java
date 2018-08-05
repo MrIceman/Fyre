@@ -105,6 +105,65 @@ public class JsonTreeConverterTest {
                 "}", result);
     }
 
+    @Test
+    public void testMultiple3LevelNodeTranslatedToJson() {
+        FireNode root = createNode("root");
+        FireNode childA = createNode("childA");
+        FireNode attrA = createNode("attrA");
+        FireNode propertyA = createNode("propertyA");
+        propertyA.setValue("variableA");
+        attrA.addChild(propertyA);
+        childA.addChild(attrA);
+        root.addChild(childA);
+
+        FireNode childB = createNode("childB");
+        FireNode attrB = createNode("attrB");
+        FireNode propertyB = createNode("propertyB");
+        propertyB.setValue("variableB");
+        attrB.addChild(propertyB);
+        childB.addChild(attrB);
+        root.addChild(childB);
+
+        String result = subject.convertFireNodeToJson(root);
+
+        assertEquals("{" +
+                "\"childB\":{" +
+                "\"attrB\":{" +
+                "\"propertyB\":\"variableB\"" +
+                "}}" +
+                "," +
+                "\"childA\":{" +
+                "\"attrA\":{" +
+                "\"propertyA\":\"variableA\"" +
+                "}" +
+                "}" +
+                "}", result);
+    }
+
+    @Test
+    public void test4LevelNodeTranslatedToJson() {
+        FireNode root = createNode("root");
+        FireNode childA = createNode("childA");
+        FireNode attrA = createNode("attrA");
+        FireNode propertyA = createNode("propertyA");
+        FireNode variableA = createNode("variableA");
+        variableA.setValue("will this stop or no");
+        propertyA.addChild(variableA);
+        attrA.addChild(propertyA);
+        childA.addChild(attrA);
+        root.addChild(childA);
+
+        String result = subject.convertFireNodeToJson(root);
+
+        assertEquals("{" +
+                "\"childA\":{" +
+                "\"attrA\":{" +
+                "\"propertyA\":{\"variableA\":\"will this stop or no\"}" +
+                "}" +
+                "}" +
+                "}", result);
+    }
+
     private FireNode createNode(String key) {
         return new FireNode(key);
     }

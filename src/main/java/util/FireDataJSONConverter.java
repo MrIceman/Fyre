@@ -19,7 +19,7 @@ public class FireDataJSONConverter {
 
     private JSONObject addChildren(JSONObject jsonParent, FireNode parent) {
         for (FireNode child : parent.getChildren()) {
-            if (child.getChildren().size() > 0) {
+            if (child.hasChildren()) {
                 JSONObject jsonChild = new JSONObject();
                 addChildren(jsonChild, child);
                 jsonParent.put(parent.getKey(), jsonChild);
