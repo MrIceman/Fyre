@@ -4,7 +4,7 @@ VisualFire is a Plugin for IntelliJ that allows you to view and update your Fire
 
 ## Getting Started
 
-Compile the Project ( Gradle - RunIDE ), got Views -> Tools -> VisualFire. Now you'll see on the right side of your IDE a tab "VisualFire". Open it, switch to the tab "Configs" and select your Firebase configs .JSON File. If you have selected a valid JSON File, your database should be loaded now. You can edit your nodes via double clicking on them. Have fun coding  
+Compile the Project ( Gradle Task -> RunIDE ), got Views -> Tools -> VisualFire. Now you'll see on the right side of your IDE a tab "VisualFire". Open it, switch to the tab "Configs" and select your Firebase configs .JSON File. If you have selected a valid JSON File, your database should be loaded now. You can edit your nodes via double clicking on them. Have fun coding  
 
 ### Prerequisites
 
@@ -28,12 +28,12 @@ As Test-Engine JUnit and Mockito is used.
 * ~~Create Swing UI~~
 * ~~Real time updates~~
 * ~~Integrate swing UI into IDE~~
-* Copy to JSON
+* ~~Copy to JSON~~
 * Import from JSON
 * ~~UI Layout~~
-* Copy relative path of a node
-*  Insert / delete a node from tree  (In Progress...)
-* Unit Tests (yeah, I was too fast on this one..)
+*  ~~Insert / delete a node from tree~~
+* Unit Tests (yeah, I was too fast on this one. In progress..)
+* UI Improvement (correct alignments, drag & drop within the tree and maybe a little logo)
 
 ## Future TODOs
 * Add Auto Complete
