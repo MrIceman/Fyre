@@ -148,6 +148,9 @@ public class TreeController implements ObserveContract.FireObserver, VFContent.A
             DefaultMutableTreeNode childNode;
             childNode = new DefaultMutableTreeNode(node.getKey());
             childNode.setUserObject(node);
+            if (node.getValue() != null) {
+                childNode.add(new DefaultMutableTreeNode(node.getValue()));
+            }
             buildTreeRecursively(childNode, node.getChildren());
             parentNode.add(childNode);
         }
