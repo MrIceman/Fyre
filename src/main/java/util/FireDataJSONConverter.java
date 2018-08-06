@@ -4,17 +4,29 @@ import model.FireNode;
 import org.json.JSONObject;
 
 public class FireDataJSONConverter {
+    private FyreLogger logger;
+
+    public FireDataJSONConverter() {
+        this(new FyreLogger("FireDataJsonConverter"));
+    }
+
+    public FireDataJSONConverter(FyreLogger logger) {
+        this.logger = logger;
+    }
 
     public String convertFireNodeToJson(FireNode node) {
         JSONObject jsonNode = new JSONObject();
         for (FireNode child : node.getChildren()) {
-            if (child.getChildren().size() == 0)
+            if (child.getChildren().size() == 0) {
                 jsonNode.put(child.getKey(), child.getValue());
-            else {
-                addChildren(jsonNode, child);
+            } else {
+                jsonNode.put(child.getKey(), addChildren(new JSONObject(), child));
             }
         }
-        return jsonNode.toString();
+
+        JSONObject parent = new JSONObject();
+        parent.put(node.getKey(), jsonNode);
+        return parent.toString();
     }
 
     private JSONObject addChildren(JSONObject jsonParent, FireNode parent) {
@@ -22,9 +34,11 @@ public class FireDataJSONConverter {
             if (child.hasChildren()) {
                 JSONObject jsonChild = new JSONObject();
                 addChildren(jsonChild, child);
-                jsonParent.put(parent.getKey(), jsonChild);
-            } else
-                jsonParent.put(parent.getKey(), new JSONObject().put(child.getKey(), child.getValue()));
+                jsonParent.put(child.getKey(), jsonChild);
+            } else {
+                jsonParent.put(child.getKey(), child.getValue());
+
+            }
         }
 
         return jsonParent;

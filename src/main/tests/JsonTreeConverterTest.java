@@ -2,6 +2,7 @@ import model.FireNode;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import util.FireDataJSONConverter;
+import util.FyreLogger;
 
 import static org.junit.Assert.assertEquals;
 
@@ -10,7 +11,7 @@ public class JsonTreeConverterTest {
 
     @BeforeClass
     public static void setup() {
-        subject = new FireDataJSONConverter();
+        subject = new FireDataJSONConverter(new FyreLogger("JsonTreeTest"));
     }
 
     @Test
@@ -23,7 +24,7 @@ public class JsonTreeConverterTest {
         root.addChild(childB);
         root.addChild(childA);
         String result = subject.convertFireNodeToJson(root);
-        assertEquals("{\"childB\":\"valB\",\"childA\":\"valA\"}", result);
+        assertEquals("{\"root\":{\"childB\":\"valB\",\"childA\":\"valA\"}}", result);
     }
 
     @Test
@@ -33,7 +34,7 @@ public class JsonTreeConverterTest {
         childA.setValue("valA");
         root.addChild(childA);
         String result = subject.convertFireNodeToJson(root);
-        assertEquals("{\"childA\":\"valA\"}", result);
+        assertEquals("{\"root\":{\"childA\":\"valA\"}}", result);
     }
 
     @Test
@@ -47,11 +48,11 @@ public class JsonTreeConverterTest {
         root.addChild(childA);
 
         String result = subject.convertFireNodeToJson(root);
-        assertEquals("{" +
+        assertEquals("{\"root\":{" +
                 "\"childA\":{" +
                 "\"attrA\":\"valA\"" +
                 "}" +
-                "}", result);
+                "}}", result);
 
     }
 
@@ -71,12 +72,13 @@ public class JsonTreeConverterTest {
         root.addChild(childB);
 
         String result = subject.convertFireNodeToJson(root);
-        assertEquals("{" +
+        assertEquals("{\"root\":{" +
                 "\"childB\":{" +
                 "\"attrB\":\"valB\"" +
                 "}," +
                 "\"childA\":{" +
                 "\"attrA\":\"valA\"" +
+                "}" +
                 "}" +
                 "}", result);
 
@@ -96,10 +98,11 @@ public class JsonTreeConverterTest {
 
         String result = subject.convertFireNodeToJson(root);
 
-        assertEquals("{" +
+        assertEquals("{\"root\":{" +
                 "\"childA\":{" +
                 "\"attrA\":{" +
                 "\"propertyA\":\"variableA\"" +
+                "}" +
                 "}" +
                 "}" +
                 "}", result);
@@ -126,7 +129,7 @@ public class JsonTreeConverterTest {
 
         String result = subject.convertFireNodeToJson(root);
 
-        assertEquals("{" +
+        assertEquals("{\"root\":{" +
                 "\"childB\":{" +
                 "\"attrB\":{" +
                 "\"propertyB\":\"variableB\"" +
@@ -137,7 +140,7 @@ public class JsonTreeConverterTest {
                 "\"propertyA\":\"variableA\"" +
                 "}" +
                 "}" +
-                "}", result);
+                "}}", result);
     }
 
     @Test
@@ -155,13 +158,13 @@ public class JsonTreeConverterTest {
 
         String result = subject.convertFireNodeToJson(root);
 
-        assertEquals("{" +
+        assertEquals("{\"root\":{" +
                 "\"childA\":{" +
                 "\"attrA\":{" +
                 "\"propertyA\":{\"variableA\":\"will this stop or no\"}" +
                 "}" +
                 "}" +
-                "}", result);
+                "}}", result);
     }
 
     private FireNode createNode(String key) {

@@ -8,6 +8,7 @@ import model.ObserveContract;
 import model.protocol.UpdateType;
 import plugin.configs.PluginConfigs;
 import plugin.forms.VFContent;
+import util.FireDataJSONConverter;
 import util.FyreLogger;
 
 import javax.swing.*;
@@ -27,20 +28,22 @@ public class TreeController implements ObserveContract.FireObserver, VFContent.A
     private PluginConfigs configs;
     private String lastSelectedPath;
     private DefaultMutableTreeNode lastSelectedNode;
+    private FireDataJSONConverter jsonConverter;
 
     public TreeController(Project project, JTree tree, VisualFire app) {
         this(project, tree, app, new FyreLogger("TreeController"));
     }
 
     public TreeController(Project project, JTree tree, VisualFire app, FyreLogger logger) {
-        this(tree, app, logger, PluginConfigs.getInstance(project));
+        this(tree, app, logger, PluginConfigs.getInstance(project), new FireDataJSONConverter());
     }
 
-    public TreeController(JTree tree, VisualFire app, FyreLogger logger, PluginConfigs configs) {
+    public TreeController(JTree tree, VisualFire app, FyreLogger logger, PluginConfigs configs, FireDataJSONConverter jsonConverter) {
         this.tree = tree;
         this.app = app;
         this.logger = logger;
         this.configs = configs;
+        this.jsonConverter = jsonConverter;
     }
 
     public void init() {
@@ -61,7 +64,8 @@ public class TreeController implements ObserveContract.FireObserver, VFContent.A
             lastSelectedNode = (DefaultMutableTreeNode) e.getPath().getLastPathComponent();
             logger.log("Last selected Node: " + lastSelectedNode.getUserObject().toString());
             lastSelectedPath = getPath(e.getPath().getPath());
-            logger.log("Selected path: " + lastSelectedPath);
+            FireNode selectedNode = (FireNode) lastSelectedNode.getUserObject();
+            logger.log(this.jsonConverter.convertFireNodeToJson(selectedNode));
         });
 
         this.model = (DefaultTreeModel) this.tree.getModel();
@@ -128,8 +132,6 @@ public class TreeController implements ObserveContract.FireObserver, VFContent.A
         DefaultMutableTreeNode newRoot = rebuildTreeNode(data);
         root.add(newRoot);
         model.reload(root);
-        //if (this.lastSelectedPath != null)
-        //   tree.expandPath(lastSelectedPath);
     }
 
 
