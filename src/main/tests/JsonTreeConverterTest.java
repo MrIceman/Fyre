@@ -15,6 +15,14 @@ public class JsonTreeConverterTest {
     }
 
     @Test
+    public void testNodeWithNoChildrenOnlyValueGetsTranslatedToJson() {
+        FireNode root = createNode("root");
+        root.setValue("what?");
+        String result = subject.convertFireNodeToJson(root);
+        assertEquals("{\"root\":\"what?\"}", result);
+    }
+
+    @Test
     public void testNodeWithPrimitiveChildrenGetsTranslatedToJson() {
         FireNode root = createNode("root");
         FireNode childA = createNode("childA");

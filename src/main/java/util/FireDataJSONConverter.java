@@ -15,18 +15,24 @@ public class FireDataJSONConverter {
     }
 
     public String convertFireNodeToJson(FireNode node) {
-        JSONObject jsonNode = new JSONObject();
-        for (FireNode child : node.getChildren()) {
-            if (child.getChildren().size() == 0) {
-                jsonNode.put(child.getKey(), child.getValue());
-            } else {
-                jsonNode.put(child.getKey(), addChildren(new JSONObject(), child));
+        if (node.hasChildren()) {
+            JSONObject jsonNode = new JSONObject();
+            for (FireNode child : node.getChildren()) {
+                if (child.getChildren().size() == 0) {
+                    jsonNode.put(child.getKey(), child.getValue());
+                } else {
+                    jsonNode.put(child.getKey(), addChildren(new JSONObject(), child));
+                }
             }
-        }
 
-        JSONObject parent = new JSONObject();
-        parent.put(node.getKey(), jsonNode);
-        return parent.toString();
+            JSONObject parent = new JSONObject();
+            parent.put(node.getKey(), jsonNode);
+            return parent.toString();
+        } else {
+            JSONObject parent = new JSONObject();
+            parent.put(node.getKey(), node.getValue());
+            return parent.toString();
+        }
     }
 
     private JSONObject addChildren(JSONObject jsonParent, FireNode parent) {
