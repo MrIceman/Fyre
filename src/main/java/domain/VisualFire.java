@@ -24,7 +24,7 @@ public class VisualFire extends ObserveContract.FireObservable implements Observ
     }
 
     public VisualFire(FyreLogger fyreLogger) {
-        this(new DataManagerImpl(fyreLogger, new FirebaseManager(fyreLogger)), fyreLogger);
+        this(new DataManagerImpl(new FirebaseManager(fyreLogger)), fyreLogger);
     }
 
     public VisualFire(DataManager dataManager, FyreLogger fyreLogger) {

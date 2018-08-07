@@ -12,7 +12,7 @@ public class PathExtractor {
             int lastSlashIndex = path.lastIndexOf('/');
             return path.substring(0, lastSlashIndex);
         } catch (Exception e) {
-            return path;
+            return "";
         }
     }
 }

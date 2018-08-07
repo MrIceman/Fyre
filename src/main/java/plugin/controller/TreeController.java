@@ -62,10 +62,8 @@ public class TreeController implements ObserveContract.FireObserver, VFContent.A
     private void configureTree() {
         this.tree.addTreeSelectionListener(e -> {
             lastSelectedNode = (DefaultMutableTreeNode) e.getPath().getLastPathComponent();
-            logger.log("Last selected Node: " + lastSelectedNode.getUserObject().toString());
+            //  logger.log("Last selected Node: " + lastSelectedNode.getUserObject().toString());
             lastSelectedPath = getPath(e.getPath().getPath());
-            FireNode selectedNode = (FireNode) lastSelectedNode.getUserObject();
-            logger.log(this.jsonConverter.convertFireNodeToJson(selectedNode));
         });
 
         this.model = (DefaultTreeModel) this.tree.getModel();
@@ -149,9 +147,7 @@ public class TreeController implements ObserveContract.FireObserver, VFContent.A
             childNode = new DefaultMutableTreeNode(node.getKey());
             childNode.setUserObject(node);
             if (node.getValue() != null) {
-                DefaultMutableTreeNode valueNode = new DefaultMutableTreeNode(node.getValue());
-                valueNode.setUserObject(node);
-                childNode.add(valueNode);
+                childNode.add(new DefaultMutableTreeNode(node.getValue()));
             }
             buildTreeRecursively(childNode, node.getChildren());
             parentNode.add(childNode);

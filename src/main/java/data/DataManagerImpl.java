@@ -26,8 +26,8 @@ public class DataManagerImpl extends ObserveContract.FireObservable implements D
     private PathExtractor pathExtractor;
     private SnapshotParser snapshotParser;
 
-    public DataManagerImpl(FyreLogger logger, FirebaseManager firebaseManager) {
-        this(logger, firebaseManager, new SnapshotParser(), new PathExtractor());
+    public DataManagerImpl(FirebaseManager firebaseManager) {
+        this(new FyreLogger("DataManagerImpl"), firebaseManager, new SnapshotParser(), new PathExtractor());
     }
 
     public DataManagerImpl(FyreLogger logger, FirebaseManager firebaseManager, SnapshotParser snapshotParser, PathExtractor pathExtractor) {
@@ -101,6 +101,7 @@ public class DataManagerImpl extends ObserveContract.FireObservable implements D
 
     @Override
     public FireNode updateNode(String pathToNode, String value) {
+        logger.log("updateNode - Path to Node: " + pathToNode + " - value: " + value);
         this.firebaseManager.getDatabase().getReference(pathToNode)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
@@ -108,6 +109,7 @@ public class DataManagerImpl extends ObserveContract.FireObservable implements D
                         if (snapshot.hasChildren()) {
                             logger.log("Obtained node: " + snapshot.getKey());
                             String parentReference = pathExtractor.removeLastPath(pathToNode);
+                            logger.log("New Parent Reference: " + parentReference);
                             DatabaseReference newRef = firebaseManager.getDatabase().getReference().child(parentReference).child(value);
                             Map<String, Object> valueMap = new HashMap<>();
                             for (DataSnapshot child : snapshot.getChildren()) {
@@ -125,14 +127,16 @@ public class DataManagerImpl extends ObserveContract.FireObservable implements D
                             });
                         } else {
                             try {
-                                logger.log("Editing a Key ");
                                 // We are editing a leaf key!
                                 String snapShotValue = snapshot.getValue().toString();
-                                logger.log("Value: " + snapShotValue);
+                                logger.log("Editing a Leaf. Value:  " + snapShotValue);
                                 firebaseManager.getDatabase()
                                         .getReference(pathExtractor.removeLastPath(pathToNode)).child(value).setValue(snapshot.getValue(),
-                                        (error, ref) -> firebaseManager.getDatabase().getReference(pathToNode)
-                                                .setValueAsync(null));
+                                        (error, ref) -> {
+                                            firebaseManager.getDatabase().getReference(pathToNode)
+                                                    .setValueAsync(null);
+
+                                        });
 
                             } catch (Exception e) {
                                 logger.log("Editing a Value!");
