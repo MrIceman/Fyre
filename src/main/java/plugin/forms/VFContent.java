@@ -24,26 +24,34 @@ public class VFContent {
     private JLabel pathLabel;
     private JTextField keyInput;
     private JTextField valueInput;
+    private JButton copyJSONButton;
+    private JButton button1;
     private JTextField newNodeInput;
     private Project project;
     private boolean pluginConfigured = false;
     private VisualFire app;
-    private AddNodeListener addNodeListener;
+    private GUIActionListener guiActionListener;
 
-    public void setAddNodeListener(AddNodeListener addNodeListener) {
-        this.addNodeListener = addNodeListener;
+    public void setGuiActionListener(GUIActionListener guiActionListener) {
+        this.guiActionListener = guiActionListener;
 
         addButton.addActionListener((e) -> {
                     if (keyInput.getText().length() > 0 && valueInput.getText().length() > 0)
-                        addNodeListener.onAddNode(keyInput.getText(), valueInput.getText());
+                        guiActionListener.onAddNode(keyInput.getText(), valueInput.getText());
                 }
         );
+
+        copyJSONButton.addActionListener((e) -> {
+            this.guiActionListener.copyNodeAsJsonToClipboard();
+        });
     }
 
-    public interface AddNodeListener {
+    public interface GUIActionListener {
         void onAddNode(String key, String value);
 
         void onDeleteNode(String path);
+
+        void copyNodeAsJsonToClipboard();
     }
 
     private void createUIComponents() {
@@ -214,7 +222,7 @@ public class VFContent {
         this.app = app;
     }
 
-    public AddNodeListener getAddNodeListener() {
-        return addNodeListener;
+    public GUIActionListener getGuiActionListener() {
+        return guiActionListener;
     }
 }
