@@ -8,8 +8,6 @@ import model.ObserveContract;
 import model.protocol.UpdateType;
 import plugin.configs.PluginConfigs;
 import plugin.forms.VFContent;
-import util.ClipboardManager;
-import util.FireDataJSONConverter;
 import util.FyreLogger;
 
 import javax.swing.*;
@@ -17,7 +15,6 @@ import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -30,24 +27,20 @@ public class TreeController implements ObserveContract.FireObserver, VFContent.G
     private PluginConfigs configs;
     private String lastSelectedPath;
     private DefaultMutableTreeNode lastSelectedNode;
-    private FireDataJSONConverter jsonConverter;
-    private ClipboardManager clipboardManager;
 
     public TreeController(Project project, JTree tree, VisualFire app) {
         this(project, tree, app, new FyreLogger("TreeController"));
     }
 
     public TreeController(Project project, JTree tree, VisualFire app, FyreLogger logger) {
-        this(tree, app, logger, PluginConfigs.getInstance(project), new FireDataJSONConverter(), new ClipboardManager(Toolkit.getDefaultToolkit().getSystemClipboard()));
+        this(tree, app, logger, PluginConfigs.getInstance(project));
     }
 
-    public TreeController(JTree tree, VisualFire app, FyreLogger logger, PluginConfigs configs, FireDataJSONConverter jsonConverter, ClipboardManager clipboardManager) {
+    public TreeController(JTree tree, VisualFire app, FyreLogger logger, PluginConfigs configs) {
         this.tree = tree;
         this.app = app;
         this.logger = logger;
         this.configs = configs;
-        this.jsonConverter = jsonConverter;
-        this.clipboardManager = clipboardManager;
     }
 
     public void init() {
@@ -66,7 +59,6 @@ public class TreeController implements ObserveContract.FireObserver, VFContent.G
     private void configureTree() {
         this.tree.addTreeSelectionListener(e -> {
             lastSelectedNode = (DefaultMutableTreeNode) e.getPath().getLastPathComponent();
-            //  logger.log("Last selected Node: " + lastSelectedNode.getUserObject().toString());
             lastSelectedPath = getPath(e.getPath().getPath());
 
         });
@@ -76,10 +68,8 @@ public class TreeController implements ObserveContract.FireObserver, VFContent.G
         model.addTreeModelListener(new TreeModelListener() {
             @Override
             public void treeNodesChanged(TreeModelEvent e) {
-                logger.log("Editing Path length: " + e.getTreePath().toString());
-
                 if (e.getPath().length < 2) {
-                    logger.log("Won't update cuz length <= 2");
+                    logger.log("Won't update because the path is shorter than 2 nodes. The initial 2 Nodes are default");
                     return;
                 }
                 Object currentVal = e.getChildren()[0];
@@ -178,6 +168,6 @@ public class TreeController implements ObserveContract.FireObserver, VFContent.G
 
     @Override
     public void copyNodeAsJsonToClipboard() {
-        this.clipboardManager.setContent(this.jsonConverter.convertFireNodeToJson((FireNode) this.lastSelectedNode.getUserObject()));
+        this.app.convertNodeToJson((FireNode) this.lastSelectedNode.getUserObject());
     }
 }

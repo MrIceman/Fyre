@@ -31,7 +31,6 @@ public class DataManagerImpl extends ObserveContract.FireObservable implements D
     }
 
     public DataManagerImpl(FyreLogger logger, FirebaseManager firebaseManager, SnapshotParser snapshotParser, PathExtractor pathExtractor) {
-        // todo - decouple initialzors from constructor for tests
         this.logger = logger;
         this.firebaseManager = firebaseManager;
         this.snapshotParser = snapshotParser;
@@ -127,7 +126,6 @@ public class DataManagerImpl extends ObserveContract.FireObservable implements D
                             });
                         } else {
                             try {
-                                // We are editing a leaf key!
                                 String snapShotValue = snapshot.getValue().toString();
                                 logger.log("Editing a Leaf. Value:  " + snapShotValue);
                                 firebaseManager.getDatabase()
@@ -140,7 +138,6 @@ public class DataManagerImpl extends ObserveContract.FireObservable implements D
 
                             } catch (Exception e) {
                                 logger.log("Editing a Value!");
-                                // We are editing a leaf value!
                                 DatabaseReference newRef = firebaseManager.getDatabase().getReference(pathExtractor.removeLastPath(pathToNode));
                                 newRef.setValueAsync(value);
                             }
@@ -153,7 +150,6 @@ public class DataManagerImpl extends ObserveContract.FireObservable implements D
                     }
                 });
 
-        //  ref.updateChildrenAsync(updatedMap);
         return null;
     }
 

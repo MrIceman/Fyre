@@ -6,8 +6,11 @@ import data.FirebaseManager;
 import model.FireNode;
 import model.ObserveContract;
 import model.protocol.UpdateType;
+import util.ClipboardManager;
+import util.FireDataJSONConverter;
 import util.FyreLogger;
 
+import java.awt.*;
 import java.io.IOException;
 import java.util.Map;
 
@@ -16,6 +19,8 @@ public class VisualFire extends ObserveContract.FireObservable implements Observ
     private FyreLogger fyreLogger;
     private static VisualFire instance;
     private boolean initialized;
+    private FireDataJSONConverter jsonConverter;
+    private ClipboardManager clipboardManager;
 
     public static VisualFire getInstance() {
         if (instance == null)
@@ -24,12 +29,16 @@ public class VisualFire extends ObserveContract.FireObservable implements Observ
     }
 
     public VisualFire(FyreLogger fyreLogger) {
-        this(new DataManagerImpl(new FirebaseManager(fyreLogger)), fyreLogger);
+        this(new DataManagerImpl(new FirebaseManager(fyreLogger)), fyreLogger,
+                new FireDataJSONConverter(),
+                new ClipboardManager(Toolkit.getDefaultToolkit().getSystemClipboard()));
     }
 
-    public VisualFire(DataManager dataManager, FyreLogger fyreLogger) {
+    public VisualFire(DataManager dataManager, FyreLogger fyreLogger, FireDataJSONConverter jsonConverter, ClipboardManager clipboardManager) {
         this.fyreLogger = fyreLogger;
         this.dataManager = dataManager;
+        this.jsonConverter = jsonConverter;
+        this.clipboardManager = clipboardManager;
     }
 
     public void setUp(String pathToCredentials) {
@@ -67,5 +76,9 @@ public class VisualFire extends ObserveContract.FireObservable implements Observ
 
     public boolean isInitialized() {
         return initialized;
+    }
+
+    public void convertNodeToJson(FireNode node) {
+        this.clipboardManager.setContent(this.jsonConverter.convertFireNodeToJson(node));
     }
 }
