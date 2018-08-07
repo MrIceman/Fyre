@@ -14,7 +14,7 @@ public class DataManagerTest {
     @Mock
     private FirebaseDatabase database;
     private FirebaseManager firebaseManagerMock;
-    DataManagerImpl subject = new DataManagerImpl(new FyreLogger("testing"), firebaseManagerMock);
+    DataManagerImpl subject = new DataManagerImpl(firebaseManagerMock);
 
     @Test
     public void simpleTest() {

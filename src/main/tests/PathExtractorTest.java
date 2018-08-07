@@ -25,8 +25,8 @@ public class PathExtractorTest {
     }
 
     @Test
-    public void testIfOnlyComponentInPathThenItDoesNotRemoveIt() {
+    public void testIfOnlyComponentInPathThenItEmptiesIt() {
         String result = subject.removeLastPath("root");
-        assertEquals("root", result);
+        assertEquals("", result);
     }
 }
