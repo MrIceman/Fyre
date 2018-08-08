@@ -13,6 +13,13 @@ public class PathExtractorTest {
     }
 
     @Test
+    public void testExtractLastPathIfOnlyOnePath() {
+        String result = subject.getLastPath("User");
+        assertEquals("User", result);
+
+    }
+
+    @Test
     public void testCorrectLastPathGetsExtractedWithMultiplePaths() {
         String result = subject.getLastPath("hello/world/how/are/you/doing");
         assertEquals("doing", result);
