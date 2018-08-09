@@ -2,20 +2,16 @@ package data;
 
 
 import com.google.firebase.database.*;
-import com.google.firebase.database.core.SnapshotHolder;
 import domain.DataManager;
 import model.FireNode;
 import model.ObserveContract;
 import model.protocol.UpdateType;
-import org.jetbrains.annotations.NotNull;
 import util.FyreLogger;
 import util.PathExtractor;
 import util.SnapshotParser;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.Executor;
 
 public class DataManagerImpl extends ObserveContract.FireObservable implements DataManager {
     private FirebaseManager firebaseManager;
@@ -25,7 +21,6 @@ public class DataManagerImpl extends ObserveContract.FireObservable implements D
     private DataSnapshot lastRootSnapshot;
     private PathExtractor pathExtractor;
     private SnapshotParser snapshotParser;
-    private boolean runningTransaction = false;
 
     public DataManagerImpl(FirebaseManager firebaseManager) {
         this(new FyreLogger("DataManagerImpl"), firebaseManager, new SnapshotParser(), new PathExtractor());
@@ -94,57 +89,65 @@ public class DataManagerImpl extends ObserveContract.FireObservable implements D
         return null;
     }
 
-    private void updateTree(String currentPath, Map<String, Object> valueMap, MutableData currentSnapshot) {
-        String newPath = currentPath + "/" + currentSnapshot.getKey();
-        valueMap.put(newPath, currentSnapshot.getValue());
+    private void mergeTrees(MutableData oldData, MutableData newData) {
+        for (MutableData mergingData : oldData.getChildren()) {
+            logger.log("Merging to the new Node  " + mergingData.getKey());
+            newData.child(mergingData.getKey()).setValue(mergingData.getValue());
+        }
     }
 
     @Override
-    public FireNode updateNode(String pathToNode, String value) {
+    public FireNode updateNode(String pathToNode, String newValue) {
         String pathOfParent = pathExtractor.removeLastPath(pathToNode);
         String oldValue = pathExtractor.getLastPath(pathToNode);
 
-        Map<String, Object> valueMap = new HashMap<>();
-        logger.log("The Path to the editing Node is : " + pathOfParent);
+        logger.log("The Path to the editing Node is: " + pathOfParent + ", oldValue: " + oldValue + ", new Value: " + newValue);
+        DatabaseReference transactionReference = pathOfParent.equals("") ? this.firebaseManager.getDatabase().getReference().getRoot()
+                : this.firebaseManager.getDatabase().getReference(pathOfParent);
 
-        this.firebaseManager.getDatabase().getReference(pathOfParent).runTransaction(new Transaction.Handler() {
+        transactionReference.runTransaction(new Transaction.Handler() {
             @Override
             public Transaction.Result doTransaction(MutableData currentData) {
-                runningTransaction = true;
                 MutableData mutableOldChild = currentData.child(oldValue);
-                logger.log("Transaction Running! " + currentData.getKey() + " with " + currentData.getChildrenCount() + " Children");
+                logger.log("Transaction Running! Key of Editing Node is " + mutableOldChild.getKey() + " with " + mutableOldChild.getChildrenCount() + " Children" + ", a value: " + mutableOldChild.getValue());
                 if (mutableOldChild.hasChildren()) {
-                    MutableData mutableNewChild = currentData.child(value);
-                    for (MutableData child : currentData.getChildren()) {
-                        updateTree("", valueMap, child);
-                    }
+                    MutableData mutableNewChild = currentData.child(newValue);
+                    mergeTrees(mutableOldChild, mutableNewChild);
                     mutableOldChild.setValue(null);
-                    mutableNewChild.setValue(valueMap);
+                    logger.log("Set NUll Value to mutable old child");
 
                 } else {
                     try {
                         String snapShotValue = currentData.child(oldValue).getValue().toString();
                         logger.log("Editing a Leaf. Value:  " + snapShotValue);
-                        currentData.child(value).setValue(snapShotValue);
+                        currentData.child(newValue).setValue(snapShotValue);
                         currentData.child(oldValue).setValue(null);
 
                     } catch (Exception e) {
                         logger.log("Editing a Value!");
-                        DatabaseReference newRef = firebaseManager.getDatabase().getReference(pathExtractor.removeLastPath(pathToNode));
-                        newRef.setValueAsync(null).addListener(() -> runningTransaction = false, Runnable::run);
+
+                        if (currentData.getValue() == null) {
+                            // we're editing a root node, not a leaf value
+                            // currentData.child(newValue).setValue(mutableOldChild);
+                            mergeTrees(currentData, currentData.child(newValue));
+                            logger.log("Value: " + currentData.getValue());
+
+                        } else
+                            currentData.child(oldValue).setValue(newValue);
                     }
                 }
 
-                //  waitUntilTransactionFinishes();
                 return Transaction.success(currentData);
             }
 
             @Override
             public void onComplete(DatabaseError error, boolean committed, DataSnapshot currentData) {
+                if (error != null)
+                    logger.log(error.getMessage());
                 logger.log("Transaction Commit Status: " + committed + " currentData:" + currentData.getKey());
             }
         }, false);
-        logger.log("updateNode - Path to Node: " + pathToNode + " - value: " + value);
+        logger.log("updateNode - Path to Node: " + pathToNode + " - value: " + newValue);
 
         return null;
     }
@@ -186,7 +189,4 @@ public class DataManagerImpl extends ObserveContract.FireObservable implements D
         this.updateAll(type, data);
     }
 
-    private void waitUntilTransactionFinishes() {
-        while (runningTransaction) ;
-    }
 }
