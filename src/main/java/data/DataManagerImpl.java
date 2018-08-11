@@ -11,6 +11,7 @@ import util.PathExtractor;
 import util.SnapshotParser;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 
 public class DataManagerImpl extends ObserveContract.FireObservable implements DataManager {
@@ -90,6 +91,7 @@ public class DataManagerImpl extends ObserveContract.FireObservable implements D
     }
 
     private void mergeTrees(MutableData oldData, MutableData newData) {
+        logger.log("MergeTrees");
         for (MutableData mergingData : oldData.getChildren()) {
             logger.log("Merging to the new Node  " + mergingData.getKey());
             newData.child(mergingData.getKey()).setValue(mergingData.getValue());
@@ -100,9 +102,9 @@ public class DataManagerImpl extends ObserveContract.FireObservable implements D
     public FireNode updateNode(String pathToNode, String newValue) {
         String pathOfParent = pathExtractor.removeLastPath(pathToNode);
         String oldValue = pathExtractor.getLastPath(pathToNode);
-
         logger.log("The Path to the editing Node is: " + pathOfParent + ", oldValue: " + oldValue + ", new Value: " + newValue);
-        DatabaseReference transactionReference = pathOfParent.equals("") ? this.firebaseManager.getDatabase().getReference().getRoot()
+        logger.log(pathOfParent.equals("") ? "path of parents is empty" : "not empty bud");
+        DatabaseReference transactionReference = pathOfParent.equals("") ? this.firebaseManager.getDatabase().getReference("")
                 : this.firebaseManager.getDatabase().getReference(pathOfParent);
 
         transactionReference.runTransaction(new Transaction.Handler() {
@@ -124,14 +126,13 @@ public class DataManagerImpl extends ObserveContract.FireObservable implements D
                         currentData.child(oldValue).setValue(null);
 
                     } catch (Exception e) {
-                        logger.log("Editing a Value!");
+                        logger.log("Editing a Value: " + currentData.getValue());
 
                         if (currentData.getValue() == null) {
                             // we're editing a root node, not a leaf value
                             // currentData.child(newValue).setValue(mutableOldChild);
                             mergeTrees(currentData, currentData.child(newValue));
-                            logger.log("Value: " + currentData.getValue());
-
+                            logger.log("Priority: " + currentData.getPriority());
                         } else
                             currentData.child(oldValue).setValue(newValue);
                     }
@@ -145,11 +146,39 @@ public class DataManagerImpl extends ObserveContract.FireObservable implements D
                 if (error != null)
                     logger.log(error.getMessage());
                 logger.log("Transaction Commit Status: " + committed + " currentData:" + currentData.getKey());
+
+                if (error != null && !committed && pathOfParent.equals("")) {
+                    /* we're handling a root value. unfortunately the firebase SDK does not support a transaction on a root node
+                       and grab direct nodes. Workaround:
+                     */
+                    logger.log("We're most certainly editing a root value");
+                    firebaseManager.getDatabase().getReference().child(oldValue).addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot oldDataSnapshot) {
+                            logger.log("Received a snapshot : " + oldDataSnapshot.toString());
+                            // We have to grab the values
+                            // 1. map all the children to a hashmap
+                            // 2.insert them iterately to the new value
+
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError error) {
+                            logger.log("Received an Error: " + error.getMessage());
+
+                        }
+                    });
+                }
             }
         }, false);
         logger.log("updateNode - Path to Node: " + pathToNode + " - value: " + newValue);
 
         return null;
+    }
+
+    private void updateTree(String currentPath, Map<String, Object> valueMap, DataSnapshot currentSnapshot) {
+        String newPath = currentPath + "/" + currentSnapshot.getKey();
+        valueMap.put(newPath, currentSnapshot.getValue());
     }
 
     @Override
