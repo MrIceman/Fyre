@@ -159,6 +159,25 @@ public class DataManagerImpl extends ObserveContract.FireObservable implements D
                             // We have to grab the values
                             // 1. map all the children to a hashmap
                             // 2.insert them iterately to the new value
+                            if (oldDataSnapshot.hasChildren()) {
+                                logger.log("Old Data Snapshot has children");
+                                Map<String, Object> valueMap = new HashMap<>();
+
+                                for (DataSnapshot child : oldDataSnapshot.getChildren()) {
+                                    updateTree("", valueMap, child);
+                                }
+                                logger.log("About to set a new value and new Value is " + newValue);
+
+                                firebaseManager.getDatabase().getReference().child(newValue).setValue(valueMap, (error12, ref) -> {
+                                    // remove old branch
+                                    firebaseManager.getDatabase().getReference().child(oldValue).setValueAsync(null);
+
+                                });
+                            } else {
+                                logger.log("no children here");
+                                firebaseManager.getDatabase().getReference().child(newValue).setValue(oldDataSnapshot.getValue(),
+                                        (error1, ref) -> firebaseManager.getDatabase().getReference().child(oldValue).setValueAsync(null));
+                            }
 
                         }
 
@@ -177,9 +196,11 @@ public class DataManagerImpl extends ObserveContract.FireObservable implements D
     }
 
     private void updateTree(String currentPath, Map<String, Object> valueMap, DataSnapshot currentSnapshot) {
-        String newPath = currentPath + "/" + currentSnapshot.getKey();
+        String newPath = currentSnapshot.getKey();
+        logger.log("Current Snapshot Value: " + currentSnapshot.getValue());
         valueMap.put(newPath, currentSnapshot.getValue());
     }
+
 
     @Override
     public void addNode(String pathToParent, Map<String, Object> value) {
