@@ -6,8 +6,17 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import domain.VisualFire;
 import plugin.configs.PluginConfigs;
+import plugin.controller.FireNodeTransferHandler;
 
 import javax.swing.*;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreePath;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.awt.dnd.DragSource;
+import java.io.IOException;
 
 
 public class VFContent {
@@ -84,6 +93,53 @@ public class VFContent {
             if (app.isInitialized())
                 app.load();
         });
+        final DefaultTreeModel model = (DefaultTreeModel) dataTree.getModel();
+        dataTree.setDragEnabled(true);
+        dataTree.setDropMode(DropMode.ON);
+        dataTree.setTransferHandler(new TransferHandler() {
+            public boolean canImport(TransferHandler.TransferSupport support) {
+                if (!support.isDataFlavorSupported(DataFlavor.stringFlavor) ||
+                        !support.isDrop()) {
+                    return false;
+                }
+                JTree.DropLocation dropLocation =
+                        (JTree.DropLocation) support.getDropLocation();
+                return dropLocation.getPath() != null;
+            }
+
+            public boolean importData(TransferHandler.TransferSupport support) {
+                if (!canImport(support)) {
+                    return false;
+                }
+                JTree.DropLocation dropLocation =
+                        (JTree.DropLocation) support.getDropLocation();
+                TreePath path = dropLocation.getPath();
+                Transferable transferable = support.getTransferable();
+                String transferData;
+                try {
+                    transferData = (String) transferable.getTransferData(
+                            DataFlavor.stringFlavor);
+                } catch (IOException e) {
+                    return false;
+                } catch (UnsupportedFlavorException e) {
+                    return false;
+                }
+                int childIndex = dropLocation.getChildIndex();
+                if (childIndex == -1) {
+                    childIndex = model.getChildCount(path.getLastPathComponent());
+                }
+                DefaultMutableTreeNode newNode =
+                        new DefaultMutableTreeNode(transferData);
+                DefaultMutableTreeNode parentNode =
+                        (DefaultMutableTreeNode) path.getLastPathComponent();
+                model.insertNodeInto(newNode, parentNode, childIndex);
+                TreePath newPath = path.pathByAddingChild(newNode);
+                dataTree.makeVisible(newPath);
+                dataTree.scrollRectToVisible(dataTree.getPathBounds(newPath));
+                return true;
+            }
+        });
+        ;
     }
 
     public JTabbedPane getTabPane() {
